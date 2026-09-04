@@ -1,0 +1,1944 @@
+<title>Amaze</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Spectral:ital,wght@0,300;0,600;1,400&display=swap">
+<style>
+/* Amaze — a drafting plate for maze algorithms.
+   Light: cool vellum. Dark: a bronze plate under glass.
+   Every colour is a token declared on bare :root first, so the un-stamped
+   (system-theme) document always resolves. */
+
+:root {
+  --bg: #e6e7e0;
+  --panel: #eff0ea;
+  --sunk: #dee0d7;
+  --plate: #d8dbd1;
+  --rule: #c5c9bd;
+  --rule-soft: #d5d8cd;
+
+  --ink: #161e1c;
+  --ink-2: #4c5854;
+  --ink-3: #7b8782;
+
+  --accent: #0f6e5f;
+  --accent-hi: #0b5145;
+  --accent-soft: rgba(15, 110, 95, 0.10);
+  --accent-line: rgba(15, 110, 95, 0.35);
+
+  --maze: #1d2a27;
+  --path: #bd3f1a;
+  --shadow: 0 1px 2px rgba(22, 30, 28, 0.07), 0 8px 24px -18px rgba(22, 30, 28, 0.5);
+
+  --step: 4px;
+  --sans: "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --serif: Spectral, ui-serif, Georgia, "Times New Roman", serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d1312;
+    --panel: #141a19;
+    --sunk: #0f1615;
+    --plate: #080d0c;
+    --rule: #26302d;
+    --rule-soft: #1c2422;
+
+    --ink: #e7eae3;
+    --ink-2: #9ca8a2;
+    --ink-3: #65716c;
+
+    --accent: #4fbfa3;
+    --accent-hi: #7fd8c0;
+    --accent-soft: rgba(79, 191, 163, 0.13);
+    --accent-line: rgba(79, 191, 163, 0.4);
+
+    --maze: #dce2d6;
+    --path: #ff7a52;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 10px 30px -20px rgba(0, 0, 0, 0.9);
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #0d1312;
+  --panel: #141a19;
+  --sunk: #0f1615;
+  --plate: #080d0c;
+  --rule: #26302d;
+  --rule-soft: #1c2422;
+
+  --ink: #e7eae3;
+  --ink-2: #9ca8a2;
+  --ink-3: #65716c;
+
+  --accent: #4fbfa3;
+  --accent-hi: #7fd8c0;
+  --accent-soft: rgba(79, 191, 163, 0.13);
+  --accent-line: rgba(79, 191, 163, 0.4);
+
+  --maze: #dce2d6;
+  --path: #ff7a52;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 10px 30px -20px rgba(0, 0, 0, 0.9);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+.shell {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 26px 24px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ---- masthead ---------------------------------------------------- */
+
+.masthead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px 28px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.mark h1 {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 34px;
+  line-height: 1;
+  letter-spacing: -0.015em;
+  margin: 0 0 6px;
+  color: var(--ink);
+}
+
+.mark p {
+  margin: 0;
+  max-width: 46ch;
+  color: var(--ink-2);
+  font-size: 13.5px;
+}
+
+.specimen {
+  display: flex;
+  gap: 22px;
+  margin: 0;
+}
+
+.specimen div { display: flex; flex-direction: column; gap: 3px; }
+
+.specimen dt {
+  font-size: 9.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.specimen dd {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- layout ------------------------------------------------------ */
+
+.work,
+.strip {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 290px;
+  gap: 22px;
+  align-items: start;
+}
+
+/* ---- the plate --------------------------------------------------- */
+
+.plate { margin: 0; display: flex; flex-direction: column; gap: 10px; }
+
+.frame {
+  position: relative;
+  background: var(--plate);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  box-shadow: var(--shadow);
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+}
+
+.frame canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
+.probe {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  padding: 4px 9px;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-2);
+  background: color-mix(in srgb, var(--panel) 82%, transparent);
+  border: 1px solid var(--rule-soft);
+  border-radius: 2px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+
+.frame:hover .probe { opacity: 1; }
+
+figcaption {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 13px;
+  color: var(--ink-2);
+  padding-left: 1px;
+}
+
+figcaption b { font-style: normal; font-weight: 600; color: var(--ink); }
+
+.hint {
+  font-size: 11.5px;
+  color: var(--ink-3);
+  padding-left: 1px;
+}
+
+.hint kbd {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  border: 1px solid var(--rule);
+  border-bottom-width: 2px;
+  border-radius: 3px;
+  padding: 0 4px;
+  color: var(--ink-2);
+}
+
+/* ---- control rail ------------------------------------------------ */
+
+.rail { display: flex; flex-direction: column; gap: 14px; }
+
+.group {
+  background: var(--panel);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  padding: 13px 14px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+
+.group > h2 {
+  margin: 0;
+  font-size: 9.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  font-weight: 600;
+}
+
+.field { display: flex; flex-direction: column; gap: 6px; }
+
+.field > label,
+.slider-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--ink-2);
+}
+
+.slider-head b {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.note {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--ink-2);
+}
+
+select,
+input[type="text"] {
+  width: 100%;
+  font-family: var(--sans);
+  font-size: 13px;
+  color: var(--ink);
+  background: var(--sunk);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  padding: 7px 9px;
+  appearance: none;
+}
+
+select {
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%),
+                    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: right 12px top 15px, right 7px top 15px;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  padding-right: 26px;
+}
+
+input[type="text"] { font-family: var(--mono); font-size: 12.5px; }
+
+.seed-row { display: flex; gap: 6px; }
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 18px;
+  background: transparent;
+  cursor: ew-resize;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 3px;
+  background: var(--rule);
+  border-radius: 2px;
+}
+input[type="range"]::-moz-range-track {
+  height: 3px;
+  background: var(--rule);
+  border-radius: 2px;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 13px;
+  height: 13px;
+  margin-top: -5px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--panel);
+}
+input[type="range"]::-moz-range-thumb {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--panel);
+}
+
+/* ---- buttons ----------------------------------------------------- */
+
+button {
+  font-family: var(--sans);
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--ink);
+  background: var(--sunk);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+}
+
+button:hover { border-color: var(--accent-line); color: var(--accent-hi); }
+button:active { transform: translateY(0.5px); }
+
+button.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--panel);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+button.primary:hover { background: var(--accent-hi); border-color: var(--accent-hi); color: var(--panel); }
+
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.row.solo { grid-template-columns: 1fr; }
+
+.segmented {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  overflow: hidden;
+  background: var(--sunk);
+}
+
+.segmented button {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  padding: 7px 4px;
+  font-size: 11.5px;
+  color: var(--ink-2);
+}
+.segmented button + button { border-left: 1px solid var(--rule); }
+.segmented button[aria-pressed="true"] {
+  background: var(--accent-soft);
+  color: var(--accent-hi);
+  font-weight: 600;
+  box-shadow: inset 0 -2px 0 var(--accent);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ---- measurements ------------------------------------------------ */
+
+.readouts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(104px, 1fr));
+  gap: 1px;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.stat {
+  background: var(--panel);
+  padding: 10px 12px 11px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.stat dt {
+  font-size: 9.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stat dd {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 17px;
+  font-weight: 500;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+.stat dd small { font-size: 11px; color: var(--ink-3); font-weight: 400; }
+
+.signature { display: flex; flex-direction: column; gap: 13px; }
+
+.meter { display: flex; flex-direction: column; gap: 5px; }
+
+.meter-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 11.5px;
+  color: var(--ink-2);
+}
+
+.meter-head b {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.track {
+  position: relative;
+  height: 5px;
+  background: var(--sunk);
+  border: 1px solid var(--rule);
+  border-radius: 1px;
+}
+
+.track i {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  background: var(--accent);
+  transition: width 0.25s ease, left 0.25s ease;
+}
+
+.track.bipolar::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -3px;
+  bottom: -3px;
+  width: 1px;
+  background: var(--rule);
+}
+
+.scale {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: var(--ink-3);
+}
+
+/* ---- responsive -------------------------------------------------- */
+
+@media (max-width: 880px) {
+  .work,
+  .strip { grid-template-columns: minmax(0, 1fr); }
+  .frame { aspect-ratio: 1 / 1; }
+  .shell { padding: 20px 16px 36px; }
+  .mark h1 { font-size: 28px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition-duration: 0.01ms !important; }
+}
+</style>
+
+<div class="shell">
+  <header class="masthead">
+    <div class="mark">
+      <h1>Amaze</h1>
+      <p>Nine ways to carve a labyrinth. Each one leaves a fingerprint — watch it appear, then measure it.</p>
+    </div>
+    <dl class="specimen">
+      <div><dt>Method</dt><dd id="chip-algo">—</dd></div>
+      <div><dt>Field</dt><dd id="chip-dim">—</dd></div>
+      <div><dt>Seed</dt><dd id="chip-seed">—</dd></div>
+    </dl>
+  </header>
+
+  <div class="work">
+    <figure class="plate">
+      <div class="frame">
+        <canvas id="stage"></canvas>
+        <div class="probe" id="probe"></div>
+      </div>
+      <figcaption id="caption">Fig. 1</figcaption>
+      <p class="hint">Click any cell to move the origin of the distance field · shift-click to move the goal · <kbd>G</kbd> carve · <kbd>T</kbd> trace · <kbd>R</kbd> reseed</p>
+      <dl class="readouts">
+        <div class="stat"><dt>Cells</dt><dd id="r-cells">—</dd></div>
+        <div class="stat"><dt>Passages</dt><dd id="r-passages">—</dd></div>
+        <div class="stat"><dt>Dead ends</dt><dd id="r-dead">—</dd></div>
+        <div class="stat"><dt>Junctions</dt><dd id="r-junctions">—</dd></div>
+        <div class="stat"><dt>Loops</dt><dd id="r-loops">—</dd></div>
+        <div class="stat"><dt>Diameter</dt><dd id="r-diameter">—</dd></div>
+        <div class="stat"><dt>Route</dt><dd id="r-route">—</dd></div>
+        <div class="stat"><dt>Cells opened</dt><dd id="r-opened">—</dd></div>
+      </dl>
+    </figure>
+
+    <aside class="rail">
+      <div class="row solo">
+        <button class="primary" id="carve">Carve a new maze</button>
+      </div>
+
+      <section class="group">
+        <h2>Method</h2>
+        <div class="field">
+          <select id="algorithm" aria-label="Generation algorithm"></select>
+        </div>
+        <p class="note" id="note-algo"></p>
+      </section>
+
+      <section class="group">
+        <h2>Field</h2>
+        <div class="field">
+          <div class="slider-head"><label for="cols">Resolution</label><b id="cols-value">—</b></div>
+          <input type="range" id="cols" min="8" max="72" step="1" value="34">
+        </div>
+        <div class="field">
+          <label for="seed">Seed</label>
+          <div class="seed-row">
+            <input type="text" id="seed" spellcheck="false" autocomplete="off">
+            <button id="reroll" title="New random seed">Reseed</button>
+          </div>
+        </div>
+        <div class="field">
+          <div class="slider-head"><label for="braid">Braiding</label><b id="braid-value">none</b></div>
+          <input type="range" id="braid" min="0" max="100" step="5" value="0">
+          <p class="note">Braiding reopens dead ends into loops, so the maze stops being a tree and starts having choices.</p>
+        </div>
+      </section>
+
+      <section class="group">
+        <h2>Plate</h2>
+        <div class="field">
+          <div class="segmented" role="group" aria-label="Rendering">
+            <button data-paint="passages" aria-pressed="false">Ink</button>
+            <button data-paint="distance" aria-pressed="true">Distance</button>
+            <button data-paint="walls" aria-pressed="false">Walls</button>
+          </div>
+        </div>
+        <div class="field">
+          <div class="slider-head"><label for="speed">Pace</label><b id="speed-value">—</b></div>
+          <input type="range" id="speed" min="0" max="8" step="1" value="5">
+        </div>
+      </section>
+
+      <section class="group">
+        <h2>Route</h2>
+        <div class="field">
+          <select id="solver" aria-label="Solving algorithm"></select>
+        </div>
+        <p class="note" id="note-solver"></p>
+        <div class="row solo"><button id="trace">Trace the route</button></div>
+      </section>
+      <section class="group signature">
+        <h2>Signature</h2>
+        <div class="meter">
+          <div class="meter-head"><span>Dead ends</span><b id="m-dead">—</b></div>
+          <div class="track"><i id="b-dead"></i></div>
+          <div class="scale"><span>0%</span><span>45% of cells</span></div>
+        </div>
+        <div class="meter">
+          <div class="meter-head"><span>Twistiness</span><b id="m-twist">—</b></div>
+          <div class="track"><i id="b-twist"></i></div>
+          <div class="scale"><span>straight runs</span><span>all corners</span></div>
+        </div>
+        <div class="meter">
+          <div class="meter-head"><span>Grain</span><b id="m-grain">—</b></div>
+          <div class="track bipolar"><i id="b-grain"></i></div>
+          <div class="scale"><span>north–south</span><span>east–west</span></div>
+        </div>
+      </section>
+    </aside>
+  </div>
+
+</div>
+
+<script>
+(function () {
+'use strict';
+
+/**
+ * Amaze — maze engine.
+ *
+ * Pure logic: no DOM, no globals. Everything is deterministic given a seed,
+ * so a figure can be reproduced exactly from its caption.
+ *
+ * A maze is a Grid of cells; each cell holds a bitmask of the directions in
+ * which a passage has been carved. Generators and solvers are generator
+ * functions that yield once per elementary step, which is what makes the
+ * animation possible without any scheduling logic inside the algorithms.
+ */
+
+const N = 1, S = 2, E = 4, W = 8;
+const DIRS = [N, S, E, W];
+
+const DX = { 1: 0, 2: 0, 4: 1, 8: -1 };
+const DY = { 1: -1, 2: 1, 4: 0, 8: 0 };
+const OPP = { 1: S, 2: N, 4: W, 8: E };
+
+/** Popcount for a 4-bit mask. */
+const POP = new Uint8Array(16);
+for (let i = 0; i < 16; i++) POP[i] = (i & 1) + ((i >> 1) & 1) + ((i >> 2) & 1) + ((i >> 3) & 1);
+
+/* ------------------------------------------------------------------ *
+ * Randomness
+ * ------------------------------------------------------------------ */
+
+function hashSeed(str) {
+  let h = 1779033703 ^ String(str).length;
+  for (let i = 0; i < str.length; i++) {
+    h = Math.imul(h ^ str.charCodeAt(i), 3432918353);
+    h = (h << 13) | (h >>> 19);
+  }
+  return (h >>> 0) || 0x9e3779b9;
+}
+
+class Rng {
+  constructor(seed) {
+    this.s = typeof seed === 'number' ? (seed >>> 0) || 1 : hashSeed(seed);
+  }
+  next() {
+    this.s = (this.s + 0x6d2b79f5) >>> 0;
+    let t = this.s;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  }
+  int(n) { return Math.floor(this.next() * n); }
+  pick(arr) { return arr[this.int(arr.length)]; }
+  shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = this.int(i + 1);
+      const t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+    }
+    return arr;
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * Grid
+ * ------------------------------------------------------------------ */
+
+class Grid {
+  constructor(w, h) {
+    this.w = w; this.h = h; this.size = w * h;
+    this.cells = new Uint8Array(this.size);
+  }
+  idx(x, y) { return y * this.w + x; }
+  cx(i) { return i % this.w; }
+  cy(i) { return (i / this.w) | 0; }
+  inBounds(x, y) { return x >= 0 && y >= 0 && x < this.w && y < this.h; }
+
+  /** Index of the neighbour in direction `d`, or -1 at the border. */
+  neighbor(i, d) {
+    const x = (i % this.w) + DX[d];
+    const y = ((i / this.w) | 0) + DY[d];
+    return this.inBounds(x, y) ? y * this.w + x : -1;
+  }
+  link(i, d) {
+    const j = this.neighbor(i, d);
+    if (j < 0) return -1;
+    this.cells[i] |= d; this.cells[j] |= OPP[d];
+    return j;
+  }
+  unlink(i, d) {
+    const j = this.neighbor(i, d);
+    if (j < 0) return -1;
+    this.cells[i] &= ~d; this.cells[j] &= ~OPP[d];
+    return j;
+  }
+  linked(i, d) { return (this.cells[i] & d) !== 0; }
+  degree(i) { return POP[this.cells[i]]; }
+  openAll() {
+    for (let i = 0; i < this.size; i++) {
+      for (const d of DIRS) if (this.neighbor(i, d) >= 0) this.cells[i] |= d;
+    }
+  }
+  clone() {
+    const g = new Grid(this.w, this.h);
+    g.cells.set(this.cells);
+    return g;
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * Generators
+ *
+ * Every generator takes (grid, rng, ctx) where ctx carries the visual state:
+ *   ctx.state[i]  0 = untouched, 1 = carved into the maze, 2 = on the frontier
+ *   ctx.head      the cell the algorithm is currently working on, or -1
+ * ------------------------------------------------------------------ */
+
+function* recursiveBacktracker(g, rng, ctx) {
+  const start = rng.int(g.size);
+  const stack = [start];
+  ctx.state[start] = 1;
+  while (stack.length) {
+    const i = stack[stack.length - 1];
+    ctx.head = i;
+    const opts = [];
+    for (const d of DIRS) {
+      const j = g.neighbor(i, d);
+      if (j >= 0 && ctx.state[j] === 0) opts.push(d);
+    }
+    if (!opts.length) { stack.pop(); yield; continue; }
+    const j = g.link(i, rng.pick(opts));
+    ctx.state[j] = 1;
+    stack.push(j);
+    yield;
+  }
+}
+
+function* huntAndKill(g, rng, ctx) {
+  let i = rng.int(g.size);
+  ctx.state[i] = 1;
+  while (i >= 0) {
+    ctx.head = i;
+    const opts = [];
+    for (const d of DIRS) {
+      const j = g.neighbor(i, d);
+      if (j >= 0 && ctx.state[j] === 0) opts.push(d);
+    }
+    if (opts.length) {
+      const j = g.link(i, rng.pick(opts));
+      ctx.state[j] = 1;
+      i = j;
+      yield;
+      continue;
+    }
+    // Hunt: scan in reading order for an untouched cell beside the maze.
+    i = -1;
+    outer:
+    for (let k = 0; k < g.size; k++) {
+      if (ctx.state[k] !== 0) continue;
+      const carved = [];
+      for (const d of DIRS) {
+        const j = g.neighbor(k, d);
+        if (j >= 0 && ctx.state[j] === 1) carved.push(d);
+      }
+      if (carved.length) {
+        g.link(k, rng.pick(carved));
+        ctx.state[k] = 1;
+        i = k;
+        yield;
+        break outer;
+      }
+    }
+  }
+}
+
+function* primSimplified(g, rng, ctx) {
+  const start = rng.int(g.size);
+  ctx.state[start] = 1;
+  const frontier = [];
+  const queued = new Uint8Array(g.size);
+  const push = (i) => {
+    for (const d of DIRS) {
+      const j = g.neighbor(i, d);
+      if (j >= 0 && ctx.state[j] === 0 && !queued[j]) {
+        queued[j] = 1; ctx.state[j] = 2; frontier.push(j);
+      }
+    }
+  };
+  push(start);
+  while (frontier.length) {
+    const k = rng.int(frontier.length);
+    const c = frontier[k];
+    frontier[k] = frontier[frontier.length - 1];
+    frontier.pop();
+    const carved = [];
+    for (const d of DIRS) {
+      const j = g.neighbor(c, d);
+      if (j >= 0 && ctx.state[j] === 1) carved.push(d);
+    }
+    g.link(c, rng.pick(carved));
+    ctx.state[c] = 1;
+    ctx.head = c;
+    push(c);
+    yield;
+  }
+}
+
+function* kruskal(g, rng, ctx) {
+  const parent = new Int32Array(g.size);
+  for (let i = 0; i < g.size; i++) parent[i] = i;
+  const find = (a) => { while (parent[a] !== a) { parent[a] = parent[parent[a]]; a = parent[a]; } return a; };
+
+  const edges = [];
+  for (let i = 0; i < g.size; i++) {
+    for (const d of [E, S]) if (g.neighbor(i, d) >= 0) edges.push(i * 4 + (d === E ? 0 : 1));
+  }
+  rng.shuffle(edges);
+  for (const e of edges) {
+    const i = (e / 4) | 0;
+    const d = e % 4 === 0 ? E : S;
+    const j = g.neighbor(i, d);
+    const a = find(i), b = find(j);
+    if (a === b) continue;
+    parent[a] = b;
+    g.link(i, d);
+    ctx.state[i] = 1; ctx.state[j] = 1; ctx.head = j;
+    yield;
+  }
+}
+
+function* wilson(g, rng, ctx) {
+  const remaining = [];
+  for (let i = 0; i < g.size; i++) remaining.push(i);
+  rng.shuffle(remaining);
+  const root = remaining.pop();
+  ctx.state[root] = 1;
+
+  const stepDir = new Uint8Array(g.size);
+  while (remaining.length) {
+    let c = remaining[remaining.length - 1];
+    if (ctx.state[c] === 1) { remaining.pop(); continue; }
+
+    // Random walk until it meets the tree, erasing its own loops as it goes.
+    const touched = [];
+    let cur = c;
+    while (ctx.state[cur] !== 1) {
+      if (ctx.state[cur] === 0) { ctx.state[cur] = 2; touched.push(cur); }
+      let j = -1, d = 0;
+      do { d = DIRS[rng.int(4)]; j = g.neighbor(cur, d); } while (j < 0);
+      stepDir[cur] = d;
+      cur = j;
+      ctx.head = cur;
+      yield;
+    }
+    // Carve the loop-erased path: following stepDir from c skips every loop.
+    cur = c;
+    while (ctx.state[cur] !== 1) {
+      const d = stepDir[cur];
+      const j = g.link(cur, d);
+      ctx.state[cur] = 1;
+      cur = j;
+    }
+    for (const t of touched) if (ctx.state[t] === 2) ctx.state[t] = 0;
+    yield;
+  }
+}
+
+function* eller(g, rng, ctx) {
+  const setOf = new Int32Array(g.size).fill(-1);
+  let nextSet = 0;
+  for (let y = 0; y < g.h; y++) {
+    for (let x = 0; x < g.w; x++) {
+      const i = g.idx(x, y);
+      if (setOf[i] < 0) setOf[i] = nextSet++;
+      ctx.state[i] = 1;
+    }
+    const lastRow = y === g.h - 1;
+    for (let x = 0; x < g.w - 1; x++) {
+      const i = g.idx(x, y), j = g.idx(x + 1, y);
+      if (setOf[i] === setOf[j]) continue;
+      if (!lastRow && rng.next() >= 0.5) continue;
+      const from = setOf[j], to = setOf[i];
+      for (let k = 0; k < g.size; k++) if (setOf[k] === from) setOf[k] = to;
+      g.link(i, E);
+      ctx.head = j;
+      yield;
+    }
+    if (lastRow) break;
+
+    const groups = new Map();
+    for (let x = 0; x < g.w; x++) {
+      const i = g.idx(x, y);
+      let m = groups.get(setOf[i]);
+      if (!m) { m = []; groups.set(setOf[i], m); }
+      m.push(i);
+    }
+    for (const [s, members] of groups) {
+      rng.shuffle(members);
+      for (let k = 0; k < members.length; k++) {
+        if (k > 0 && rng.next() >= 0.5) continue;
+        const j = g.link(members[k], S);
+        setOf[j] = s;
+        ctx.state[j] = 1;
+        ctx.head = j;
+        yield;
+      }
+    }
+  }
+}
+
+function* recursiveDivision(g, rng, ctx) {
+  g.openAll();
+  ctx.state.fill(1);
+  yield* divide(g, rng, ctx, 0, 0, g.w, g.h);
+}
+
+function* divide(g, rng, ctx, x, y, w, h) {
+  if (w < 2 || h < 2) return;
+  const horizontal = h > w ? true : w > h ? false : rng.int(2) === 0;
+  if (horizontal) {
+    const wallY = y + rng.int(h - 1);
+    const gap = x + rng.int(w);
+    for (let i = x; i < x + w; i++) {
+      if (i !== gap) g.unlink(g.idx(i, wallY), S);
+    }
+    ctx.head = g.idx(gap, wallY);
+    yield;
+    const top = wallY - y + 1;
+    yield* divide(g, rng, ctx, x, y, w, top);
+    yield* divide(g, rng, ctx, x, wallY + 1, w, h - top);
+  } else {
+    const wallX = x + rng.int(w - 1);
+    const gap = y + rng.int(h);
+    for (let j = y; j < y + h; j++) {
+      if (j !== gap) g.unlink(g.idx(wallX, j), E);
+    }
+    ctx.head = g.idx(wallX, gap);
+    yield;
+    const left = wallX - x + 1;
+    yield* divide(g, rng, ctx, x, y, left, h);
+    yield* divide(g, rng, ctx, wallX + 1, y, w - left, h);
+  }
+}
+
+function* binaryTree(g, rng, ctx) {
+  for (let i = 0; i < g.size; i++) {
+    const opts = [];
+    if (g.neighbor(i, N) >= 0) opts.push(N);
+    if (g.neighbor(i, E) >= 0) opts.push(E);
+    ctx.state[i] = 1;
+    ctx.head = i;
+    if (opts.length) g.link(i, rng.pick(opts));
+    yield;
+  }
+}
+
+function* sidewinder(g, rng, ctx) {
+  for (let y = 0; y < g.h; y++) {
+    let run = [];
+    for (let x = 0; x < g.w; x++) {
+      const i = g.idx(x, y);
+      run.push(i);
+      ctx.state[i] = 1;
+      ctx.head = i;
+      const atEast = x === g.w - 1;
+      const closeOut = atEast || (y > 0 && rng.next() < 0.5);
+      if (closeOut) {
+        if (y > 0) g.link(rng.pick(run), N);
+        run = [];
+      } else {
+        g.link(i, E);
+      }
+      yield;
+    }
+  }
+}
+
+const GENERATORS = {
+  backtracker: {
+    label: 'Recursive backtracker',
+    fn: recursiveBacktracker,
+    note: 'A depth-first walk that only retreats when cornered. Long, sinuous corridors and very few junctions — the most “river-like” of the nine.',
+  },
+  prim: {
+    label: "Prim's (simplified)",
+    fn: primSimplified,
+    note: 'Grows outward from a seed cell, always attaching a random frontier cell. Short, stubby passages radiating from the origin; dead ends everywhere.',
+  },
+  kruskal: {
+    label: "Kruskal's",
+    fn: kruskal,
+    note: 'Shuffles every wall, then knocks down any that joins two separate regions. Uniform, isotropic texture with no sense of origin.',
+  },
+  wilson: {
+    label: "Wilson's",
+    fn: wilson,
+    note: 'Loop-erased random walks. Slow to start and glacial at large sizes, but the only method here that draws every possible maze with equal probability.',
+  },
+  eller: {
+    label: "Eller's",
+    fn: eller,
+    note: 'Works one row at a time, tracking which cells already connect. Needs memory for a single row, so it can generate an infinitely tall maze.',
+  },
+  huntkill: {
+    label: 'Hunt-and-kill',
+    fn: huntAndKill,
+    note: 'A backtracker with no stack: when cornered it scans the grid for a fresh cell touching the maze. Long corridors, plus a faint top-to-bottom grain from the scan order.',
+  },
+  division: {
+    label: 'Recursive division',
+    fn: recursiveDivision,
+    note: 'The only subtractive method here — it starts with an open field and keeps bisecting it, leaving one gap per wall. Produces distinct rectangular rooms.',
+  },
+  sidewinder: {
+    label: 'Sidewinder',
+    fn: sidewinder,
+    note: 'Carves eastward runs, then punches one passage north per run. The top row is a single unbroken corridor — a permanent tell.',
+  },
+  binary: {
+    label: 'Binary tree',
+    fn: binaryTree,
+    note: 'Each cell flips a coin: carve north or east. Two full corridors along the north and east edges, and a diagonal grain across the whole field.',
+  },
+};
+
+/* ------------------------------------------------------------------ *
+ * Braiding — remove dead ends by linking them onward, creating loops.
+ * ------------------------------------------------------------------ */
+
+function braid(g, rng, amount) {
+  if (amount <= 0) return;
+  const deadEnds = [];
+  for (let i = 0; i < g.size; i++) if (g.degree(i) === 1) deadEnds.push(i);
+  rng.shuffle(deadEnds);
+  for (const i of deadEnds) {
+    if (g.degree(i) !== 1) continue;
+    if (rng.next() > amount) continue;
+    const closed = DIRS.filter((d) => g.neighbor(i, d) >= 0 && !g.linked(i, d));
+    if (!closed.length) continue;
+    // Prefer joining two dead ends: it removes two at once and reads better.
+    const best = closed.filter((d) => g.degree(g.neighbor(i, d)) === 1);
+    g.link(i, rng.pick(best.length ? best : closed));
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * Analysis
+ * ------------------------------------------------------------------ */
+
+/** Breadth-first distances from `source`; -1 where unreachable. */
+function distances(g, source) {
+  const dist = new Int32Array(g.size).fill(-1);
+  const queue = new Int32Array(g.size);
+  let head = 0, tail = 0;
+  dist[source] = 0;
+  queue[tail++] = source;
+  while (head < tail) {
+    const i = queue[head++];
+    for (const d of DIRS) {
+      if (!g.linked(i, d)) continue;
+      const j = g.neighbor(i, d);
+      if (j < 0 || dist[j] >= 0) continue;
+      dist[j] = dist[i] + 1;
+      queue[tail++] = j;
+    }
+  }
+  return dist;
+}
+
+function farthest(dist) {
+  let best = 0, at = 0;
+  for (let i = 0; i < dist.length; i++) if (dist[i] > best) { best = dist[i]; at = i; }
+  return { cell: at, d: best };
+}
+
+/** Longest shortest-path in the maze (exact for trees, a lower bound once braided). */
+function diameter(g) {
+  const a = farthest(distances(g, 0)).cell;
+  const da = distances(g, a);
+  const b = farthest(da);
+  return { from: a, to: b.cell, length: b.d };
+}
+
+function measure(g) {
+  let deadEnds = 0, junctions = 0, straights = 0, turns = 0, passages = 0;
+  let horizontal = 0, vertical = 0;
+  for (let i = 0; i < g.size; i++) {
+    const c = g.cells[i], deg = POP[c];
+    if (c & E) { passages++; horizontal++; }
+    if (c & S) { passages++; vertical++; }
+    if (deg === 1) deadEnds++;
+    else if (deg >= 3) junctions++;
+    else if (deg === 2) {
+      if (c === (N | S) || c === (E | W)) straights++; else turns++;
+    }
+  }
+  const corridor = straights + turns;
+  const dia = diameter(g);
+  return {
+    cells: g.size,
+    passages,
+    deadEnds,
+    deadEndRatio: deadEnds / g.size,
+    junctions,
+    junctionRatio: junctions / g.size,
+    twistiness: corridor ? turns / corridor : 0,
+    // -1 = every passage runs north-south, +1 = every passage runs east-west.
+    grain: passages ? (horizontal - vertical) / passages : 0,
+    loops: passages - (g.size - 1),
+    diameter: dia.length,
+    diameterFrom: dia.from,
+    diameterTo: dia.to,
+    reach: dia.length / g.size,
+  };
+}
+
+/* ------------------------------------------------------------------ *
+ * Solvers
+ *
+ * Same contract as the generators: yield once per step, and leave the result
+ * on ctx.path. ctx.seen[i] is 0 unvisited, 1 expanded, 2 on the fringe.
+ * ------------------------------------------------------------------ */
+
+class MinHeap {
+  constructor() { this.k = []; this.v = []; }
+  get size() { return this.k.length; }
+  push(key, val) {
+    this.k.push(key); this.v.push(val);
+    let i = this.k.length - 1;
+    while (i > 0) {
+      const p = (i - 1) >> 1;
+      if (this.k[p] <= this.k[i]) break;
+      this.swap(i, p); i = p;
+    }
+  }
+  pop() {
+    const top = this.v[0];
+    const lk = this.k.pop(), lv = this.v.pop();
+    if (this.k.length) {
+      this.k[0] = lk; this.v[0] = lv;
+      let i = 0;
+      for (;;) {
+        const l = 2 * i + 1, r = l + 1;
+        let m = i;
+        if (l < this.k.length && this.k[l] < this.k[m]) m = l;
+        if (r < this.k.length && this.k[r] < this.k[m]) m = r;
+        if (m === i) break;
+        this.swap(i, m); i = m;
+      }
+    }
+    return top;
+  }
+  swap(a, b) {
+    const tk = this.k[a]; this.k[a] = this.k[b]; this.k[b] = tk;
+    const tv = this.v[a]; this.v[a] = this.v[b]; this.v[b] = tv;
+  }
+}
+
+function tracePath(prev, start, goal) {
+  const path = [];
+  let c = goal;
+  while (c !== -1 && c !== start) { path.push(c); c = prev[c]; }
+  if (c !== start) return [];
+  path.push(start);
+  return path.reverse();
+}
+
+function* breadthFirst(g, ctx, start, goal) {
+  const prev = new Int32Array(g.size).fill(-1);
+  const queue = [start];
+  let qi = 0;
+  ctx.seen[start] = 1;
+  while (qi < queue.length) {
+    const i = queue[qi++];
+    ctx.seen[i] = 1;
+    ctx.head = i;
+    if (i === goal) break;
+    for (const d of DIRS) {
+      if (!g.linked(i, d)) continue;
+      const j = g.neighbor(i, d);
+      if (j < 0 || ctx.seen[j]) continue;
+      ctx.seen[j] = 2; prev[j] = i; queue.push(j);
+    }
+    yield;
+  }
+  ctx.path = tracePath(prev, start, goal);
+}
+
+function* aStar(g, ctx, start, goal) {
+  const gx = g.cx(goal), gy = g.cy(goal);
+  const heuristic = (i) => Math.abs(g.cx(i) - gx) + Math.abs(g.cy(i) - gy);
+  const cost = new Int32Array(g.size).fill(0x7fffffff);
+  const prev = new Int32Array(g.size).fill(-1);
+  const open = new MinHeap();
+  cost[start] = 0;
+  open.push(heuristic(start), start);
+  ctx.seen[start] = 2;
+  while (open.size) {
+    const i = open.pop();
+    if (ctx.seen[i] === 1) continue;
+    ctx.seen[i] = 1;
+    ctx.head = i;
+    if (i === goal) break;
+    for (const d of DIRS) {
+      if (!g.linked(i, d)) continue;
+      const j = g.neighbor(i, d);
+      if (j < 0) continue;
+      const next = cost[i] + 1;
+      if (next >= cost[j]) continue;
+      cost[j] = next; prev[j] = i;
+      if (ctx.seen[j] !== 1) ctx.seen[j] = 2;
+      open.push(next + heuristic(j), j);
+    }
+    yield;
+  }
+  ctx.path = tracePath(prev, start, goal);
+}
+
+/** Left-hand rule. Never shortest, but it needs no memory of where it has been. */
+function* wallFollower(g, ctx, start, goal) {
+  const order = [N, E, S, W];
+  let facing = 0;
+  for (let k = 0; k < 4; k++) if (g.linked(start, order[k])) { facing = k; break; }
+  const trail = [start];
+  const onTrail = new Int32Array(g.size).fill(-1);
+  onTrail[start] = 0;
+  let cur = start;
+  const cap = g.size * 12;
+  for (let step = 0; step < cap && cur !== goal; step++) {
+    const left = (facing + 3) % 4;
+    let move = -1;
+    if (g.linked(cur, order[left])) { facing = left; move = left; }
+    else if (g.linked(cur, order[facing])) move = facing;
+    else {
+      const right = (facing + 1) % 4;
+      if (g.linked(cur, order[right])) { facing = right; move = right; }
+      else { facing = (facing + 2) % 4; move = facing; }
+    }
+    cur = g.neighbor(cur, order[move]);
+    ctx.seen[cur] = 1;
+    ctx.head = cur;
+    // Cut the loop out of the trail whenever the walk crosses itself.
+    if (onTrail[cur] >= 0) {
+      for (let k = trail.length - 1; k > onTrail[cur]; k--) onTrail[trail[k]] = -1;
+      trail.length = onTrail[cur] + 1;
+    } else {
+      onTrail[cur] = trail.length;
+      trail.push(cur);
+    }
+    yield;
+  }
+  ctx.path = cur === goal ? trail.slice() : [];
+}
+
+/** Fill every dead end until only the corridors between start and goal survive. */
+function* deadEndFill(g, ctx, start, goal) {
+  const filled = new Uint8Array(g.size);
+  let queue = [];
+  for (let i = 0; i < g.size; i++) if (g.degree(i) === 1 && i !== start && i !== goal) queue.push(i);
+  while (queue.length) {
+    const next = [];
+    for (const i of queue) {
+      if (filled[i] || i === start || i === goal) continue;
+      let open = 0, onlyDir = 0;
+      for (const d of DIRS) {
+        if (!g.linked(i, d)) continue;
+        const j = g.neighbor(i, d);
+        if (j >= 0 && !filled[j]) { open++; onlyDir = d; }
+      }
+      if (open > 1) continue;
+      filled[i] = 1;
+      ctx.seen[i] = 1;
+      ctx.head = i;
+      if (open === 1) next.push(g.neighbor(i, onlyDir));
+      yield;
+    }
+    queue = next;
+  }
+  // What is left is the solution corridor; walk it to order the cells.
+  const prev = new Int32Array(g.size).fill(-1);
+  const seen = new Uint8Array(g.size);
+  const q = [start]; let qi = 0; seen[start] = 1;
+  while (qi < q.length) {
+    const i = q[qi++];
+    if (i === goal) break;
+    for (const d of DIRS) {
+      if (!g.linked(i, d)) continue;
+      const j = g.neighbor(i, d);
+      if (j < 0 || seen[j] || filled[j]) continue;
+      seen[j] = 1; prev[j] = i; q.push(j);
+    }
+  }
+  ctx.path = tracePath(prev, start, goal);
+}
+
+/** Not a search: the two ends of the maze's longest corridor. */
+function* longestPath(g, ctx) {
+  const { from, to } = diameter(g);
+  const prev = new Int32Array(g.size).fill(-1);
+  const q = [from];
+  let qi = 0;
+  ctx.seen[from] = 1;
+  while (qi < q.length) {
+    const i = q[qi++];
+    ctx.head = i;
+    for (const d of DIRS) {
+      if (!g.linked(i, d)) continue;
+      const j = g.neighbor(i, d);
+      if (j < 0 || ctx.seen[j]) continue;
+      ctx.seen[j] = 1; prev[j] = i; q.push(j);
+    }
+    yield;
+  }
+  ctx.path = tracePath(prev, from, to);
+  ctx.endpoints = [from, to];
+}
+
+const SOLVERS = {
+  bfs: { label: 'Breadth-first', fn: breadthFirst, note: 'Expands every cell at distance d before any at d+1. Always finds the shortest route, and floods the whole maze doing it.' },
+  astar: { label: 'A* search', fn: aStar, note: 'Breadth-first, biased toward the goal by straight-line distance. Same answer, a fraction of the cells opened.' },
+  wall: { label: 'Wall follower', fn: wallFollower, note: 'Keep your left hand on the wall and walk. Works in any maze without loops, needs no memory, and rarely finds the short way.' },
+  fill: { label: 'Dead-end filling', fn: deadEndFill, note: 'Ignores the goal entirely: plug every dead end, repeatedly, and the solution is whatever corridor is left standing.' },
+  longest: { label: 'Longest path', fn: longestPath, note: 'Two breadth-first sweeps find the maze’s diameter — the hardest pair of cells it can pose.' },
+};
+
+/* ------------------------------------------------------------------ *
+ * Orchestration
+ * ------------------------------------------------------------------ */
+
+function createGeneration(algorithm, w, h, seed) {
+  const grid = new Grid(w, h);
+  const rng = new Rng(seed);
+  const ctx = { state: new Uint8Array(grid.size), head: -1 };
+  const gen = GENERATORS[algorithm] || GENERATORS.backtracker;
+  return { grid, ctx, iter: gen.fn(grid, rng, ctx), rng };
+}
+
+function createSolve(kind, grid, start, goal) {
+  const ctx = { seen: new Uint8Array(grid.size), head: -1, path: [], endpoints: null };
+  const solver = SOLVERS[kind] || SOLVERS.bfs;
+  return { ctx, iter: solver.fn(grid, ctx, start, goal) };
+}
+
+/** Run an iterator to completion, with a hard cap so a pathological seed cannot hang. */
+function drain(iter, cap = 8e6) {
+  let n = 0;
+  while (n++ < cap) if (iter.next().done) return true;
+  return false;
+}
+
+
+/**
+ * Amaze — interface layer. Owns the canvas, the controls and the animation
+ * clock; every maze decision lives in engine.js.
+ */
+
+const $ = (id) => document.getElementById(id);
+
+/* ---- the distance ramp: oxidised bronze warming to gilt ------------ */
+
+const RAMP_STOPS = [
+  [0.00, [10, 29, 36]],
+  [0.16, [16, 63, 76]],
+  [0.32, [23, 107, 99]],
+  [0.50, [61, 143, 90]],
+  [0.66, [127, 168, 69]],
+  [0.82, [201, 166, 60]],
+  [0.92, [228, 185, 97]],
+  [1.00, [246, 231, 194]],
+];
+
+const RAMP = (() => {
+  const out = [];
+  for (let k = 0; k < 256; k++) {
+    const t = k / 255;
+    let a = RAMP_STOPS[0], b = RAMP_STOPS[RAMP_STOPS.length - 1];
+    for (let s = 0; s < RAMP_STOPS.length - 1; s++) {
+      if (t >= RAMP_STOPS[s][0] && t <= RAMP_STOPS[s + 1][0]) { a = RAMP_STOPS[s]; b = RAMP_STOPS[s + 1]; break; }
+    }
+    const span = b[0] - a[0];
+    const f = span > 0 ? (t - a[0]) / span : 0;
+    const c = [0, 1, 2].map((n) => Math.round(a[1][n] + (b[1][n] - a[1][n]) * f));
+    out.push(`rgb(${c[0]} ${c[1]} ${c[2]})`);
+  }
+  return out;
+})();
+
+const SPEEDS = [1, 2, 4, 10, 24, 60, 160, 500, Infinity];
+const SPEED_LABELS = ['1 step', '2 steps', '4 steps', '10 steps', '24 steps', '60 steps', '160 steps', '500 steps', 'instant'];
+const SEED_WORDS = ['minotaur', 'knossos', 'hedgerow', 'ariadne', 'cloister', 'warren', 'daedalus', 'thicket', 'catacomb', 'spiral', 'quarry', 'burrow'];
+
+const state = {
+  algorithm: 'backtracker',
+  cols: 34,
+  seedText: 'minotaur',
+  braidAmount: 0,
+  paint: 'distance',
+  solver: 'longest',
+  speed: 5,
+  grid: null,
+  pristine: null,
+  gen: null,
+  solve: null,
+  metrics: null,
+  dist: null,
+  maxDist: 1,
+  start: 0,
+  goal: 0,
+  hover: -1,
+  running: false,
+  geom: null,
+};
+
+const canvas = $('stage');
+const g2d = canvas.getContext('2d');
+let cssW = 0, cssH = 0;
+
+function token(name) {
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
+
+/* ---- geometry ----------------------------------------------------- */
+
+function resize() {
+  const rect = canvas.getBoundingClientRect();
+  if (!rect.width) return;
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  cssW = rect.width; cssH = rect.height;
+  canvas.width = Math.round(cssW * dpr);
+  canvas.height = Math.round(cssH * dpr);
+  g2d.setTransform(dpr, 0, 0, dpr, 0, 0);
+  computeGeometry();
+  render();
+}
+
+function computeGeometry() {
+  if (!state.grid) return;
+  const { w, h } = state.grid;
+  const inset = 10;
+  const cell = Math.max(2, Math.min((cssW - inset * 2) / w, (cssH - inset * 2) / h));
+  state.geom = {
+    cell,
+    ox: (cssW - cell * w) / 2,
+    oy: (cssH - cell * h) / 2,
+    pad: Math.max(0.8, cell * 0.19),
+  };
+}
+
+function rowsFor(cols) {
+  const aspect = cssH && cssW ? cssH / cssW : 0.75;
+  return Math.max(2, Math.round(cols * aspect));
+}
+
+function cellAt(clientX, clientY) {
+  if (!state.geom || !state.grid) return -1;
+  const rect = canvas.getBoundingClientRect();
+  const { cell, ox, oy } = state.geom;
+  const x = Math.floor((clientX - rect.left - ox) / cell);
+  const y = Math.floor((clientY - rect.top - oy) / cell);
+  return state.grid.inBounds(x, y) ? state.grid.idx(x, y) : -1;
+}
+
+/* ---- drawing ------------------------------------------------------ */
+
+function render() {
+  if (!state.grid || !state.geom) return;
+  const g = state.grid;
+  const { cell, ox, oy, pad } = state.geom;
+  const plate = token('--plate');
+
+  g2d.fillStyle = plate;
+  g2d.fillRect(0, 0, cssW, cssH);
+
+  const mid = cell - pad * 2;
+  const generating = !!state.gen;
+  const cellState = generating ? state.gen.ctx.state : null;
+  const mode = generating ? 'passages' : state.paint;
+
+  if (mode === 'walls') {
+    drawWalls(g, cell, ox, oy);
+  } else {
+    drawCorridors(g, cell, ox, oy, pad, mid, mode, cellState);
+  }
+
+  if (generating) drawFrontier(g, cell, ox, oy, cellState, state.gen.ctx.head);
+  if (state.solve) drawSolve(g, cell, ox, oy, pad, mid);
+
+  if (state.hover >= 0) {
+    g2d.strokeStyle = token('--accent');
+    g2d.lineWidth = 1.5;
+    g2d.strokeRect(ox + g.cx(state.hover) * cell + 0.75, oy + g.cy(state.hover) * cell + 0.75, cell - 1.5, cell - 1.5);
+  }
+}
+
+/** Passages as filled corridors; the walls are the negative space between them. */
+function drawCorridors(g, cell, ox, oy, pad, mid, mode, cellState) {
+  const heat = mode === 'distance' && state.dist;
+  const batches = new Map();
+  const add = (key, x, y, w, h) => {
+    let list = batches.get(key);
+    if (!list) { list = []; batches.set(key, list); }
+    list.push(x, y, w, h);
+  };
+  const shadeOf = (i) => {
+    if (!heat) return 'ink';
+    const d = state.dist[i];
+    return d < 0 ? 'ink' : Math.round((d / state.maxDist) * 255);
+  };
+
+  for (let i = 0; i < g.size; i++) {
+    if (cellState && cellState[i] === 0) continue;
+    const x = ox + g.cx(i) * cell + pad;
+    const y = oy + g.cy(i) * cell + pad;
+    const ci = shadeOf(i);
+    add(ci, x, y, mid, mid);
+
+    if (g.linked(i, 4)) {                       // east
+      const j = i + 1;
+      if (!cellState || cellState[j] !== 0) {
+        const cj = shadeOf(j);
+        add(blend(ci, cj), x + mid, y, pad * 2, mid);
+      }
+    }
+    if (g.linked(i, 2)) {                       // south
+      const j = i + g.w;
+      if (!cellState || cellState[j] !== 0) {
+        const cj = shadeOf(j);
+        add(blend(ci, cj), x, y + mid, mid, pad * 2);
+      }
+    }
+  }
+
+  const ink = token('--maze');
+  for (const [key, rects] of batches) {
+    g2d.fillStyle = key === 'ink' ? ink : RAMP[key];
+    g2d.beginPath();
+    for (let k = 0; k < rects.length; k += 4) g2d.rect(rects[k], rects[k + 1], rects[k + 2], rects[k + 3]);
+    g2d.fill();
+  }
+}
+
+function blend(a, b) {
+  if (a === 'ink' || b === 'ink') return 'ink';
+  return (a + b) >> 1;
+}
+
+/** The classic line drawing: stroke every wall that was never carved through. */
+function drawWalls(g, cell, ox, oy) {
+  g2d.strokeStyle = token('--maze');
+  g2d.lineWidth = Math.max(1, Math.min(2.4, cell * 0.11));
+  g2d.lineCap = 'square';
+  g2d.beginPath();
+  for (let i = 0; i < g.size; i++) {
+    const x = ox + g.cx(i) * cell;
+    const y = oy + g.cy(i) * cell;
+    if (!g.linked(i, 1)) { g2d.moveTo(x, y); g2d.lineTo(x + cell, y); }
+    if (!g.linked(i, 8)) { g2d.moveTo(x, y); g2d.lineTo(x, y + cell); }
+    if (g.cx(i) === g.w - 1) { g2d.moveTo(x + cell, y); g2d.lineTo(x + cell, y + cell); }
+    if (g.cy(i) === g.h - 1) { g2d.moveTo(x, y + cell); g2d.lineTo(x + cell, y + cell); }
+  }
+  g2d.stroke();
+}
+
+function drawFrontier(g, cell, ox, oy, cellState, head) {
+  g2d.fillStyle = token('--accent-soft');
+  g2d.beginPath();
+  for (let i = 0; i < g.size; i++) {
+    if (cellState[i] !== 2) continue;
+    g2d.rect(ox + g.cx(i) * cell, oy + g.cy(i) * cell, cell, cell);
+  }
+  g2d.fill();
+  if (head >= 0) {
+    g2d.fillStyle = token('--path');
+    g2d.fillRect(ox + g.cx(head) * cell, oy + g.cy(head) * cell, cell, cell);
+  }
+}
+
+function drawSolve(g, cell, ox, oy, pad, mid) {
+  const { ctx } = state.solve;
+
+  g2d.fillStyle = token('--accent-soft');
+  g2d.beginPath();
+  for (let i = 0; i < g.size; i++) {
+    if (!ctx.seen[i]) continue;
+    g2d.rect(ox + g.cx(i) * cell + pad, oy + g.cy(i) * cell + pad, mid, mid);
+  }
+  g2d.fill();
+
+  const path = ctx.path;
+  if (path && path.length) {
+    g2d.strokeStyle = token('--path');
+    g2d.lineWidth = Math.max(1.6, cell * 0.34);
+    g2d.lineJoin = 'round';
+    g2d.lineCap = 'round';
+    g2d.beginPath();
+    for (let k = 0; k < path.length; k++) {
+      const px = ox + g.cx(path[k]) * cell + cell / 2;
+      const py = oy + g.cy(path[k]) * cell + cell / 2;
+      if (k === 0) g2d.moveTo(px, py); else g2d.lineTo(px, py);
+    }
+    g2d.stroke();
+    marker(g, path[0], cell, ox, oy, true);
+    marker(g, path[path.length - 1], cell, ox, oy, false);
+  }
+}
+
+function marker(g, i, cell, ox, oy, filled) {
+  const cx = ox + g.cx(i) * cell + cell / 2;
+  const cy = oy + g.cy(i) * cell + cell / 2;
+  const r = Math.max(2.5, cell * 0.3);
+  g2d.lineWidth = Math.max(1.2, cell * 0.12);
+  g2d.beginPath();
+  g2d.arc(cx, cy, r, 0, Math.PI * 2);
+  g2d.fillStyle = filled ? token('--path') : token('--plate');
+  g2d.fill();
+  g2d.strokeStyle = filled ? token('--plate') : token('--path');
+  g2d.stroke();
+}
+
+/* ---- run loop ------------------------------------------------------ */
+
+function tick() {
+  if (!state.running) return;
+  const budget = SPEEDS[state.speed];
+
+  if (state.gen) {
+    if (budget === Infinity) {
+      drain(state.gen.iter);
+      finishGeneration();
+    } else {
+      for (let k = 0; k < budget; k++) {
+        if (state.gen.iter.next().done) { finishGeneration(); break; }
+      }
+    }
+  } else if (state.solve) {
+    if (budget === Infinity) {
+      drain(state.solve.iter);
+      finishSolve();
+    } else {
+      for (let k = 0; k < budget; k++) {
+        if (state.solve.iter.next().done) { finishSolve(); break; }
+      }
+    }
+  } else {
+    state.running = false;
+  }
+
+  render();
+  updateReadouts();
+  if (state.running) requestAnimationFrame(tick);
+}
+
+function start() {
+  if (state.running) return;
+  state.running = true;
+  requestAnimationFrame(tick);
+}
+
+/* ---- actions ------------------------------------------------------- */
+
+function carve(instant) {
+  const rows = rowsFor(state.cols);
+  state.gen = createGeneration(state.algorithm, state.cols, rows, state.seedText);
+  state.grid = state.gen.grid;
+  state.pristine = null;
+  state.solve = null;
+  state.dist = null;
+  state.start = 0;
+  state.goal = state.grid.size - 1;
+  state.hover = -1;
+  computeGeometry();
+  syncCaption();
+
+  if (instant || SPEEDS[state.speed] === Infinity) {
+    drain(state.gen.iter);
+    finishGeneration();
+    render();
+    updateReadouts();
+  } else {
+    start();
+  }
+}
+
+function finishGeneration() {
+  state.pristine = state.grid.clone();
+  state.gen = null;
+  state.running = false;
+  applyBraid();
+}
+
+/** Braiding is re-derived from the pristine maze so the slider runs both ways. */
+function applyBraid() {
+  if (!state.pristine) return;
+  state.grid = state.pristine.clone();
+  if (state.braidAmount > 0) braid(state.grid, new Rng(state.seedText + ':braid'), state.braidAmount);
+  state.solve = null;
+  recomputeField();
+  render();
+  updateReadouts();
+}
+
+function recomputeField() {
+  if (!state.grid || state.gen) return;
+  state.metrics = measure(state.grid);
+  state.dist = distances(state.grid, state.start);
+  let max = 1;
+  for (let i = 0; i < state.dist.length; i++) if (state.dist[i] > max) max = state.dist[i];
+  state.maxDist = max;
+}
+
+function trace(instant) {
+  if (!state.grid || state.gen) return;
+  state.solve = createSolve(state.solver, state.grid, state.start, state.goal);
+  if (instant || SPEEDS[state.speed] === Infinity) {
+    drain(state.solve.iter);
+    finishSolve();
+    render();
+    updateReadouts();
+  } else {
+    start();
+  }
+}
+
+function finishSolve() {
+  state.running = false;
+}
+
+/* ---- readouts ------------------------------------------------------ */
+
+const pct = (v) => `${(v * 100).toFixed(1)}%`;
+
+function updateReadouts() {
+  const m = state.metrics;
+  const g = state.grid;
+  if (!g) return;
+
+  $('chip-dim').textContent = `${g.w} × ${g.h}`;
+  $('chip-seed').textContent = state.seedText || '—';
+  $('chip-algo').textContent = GENERATORS[state.algorithm].label;
+
+  if (state.gen) {
+    let carved = 0;
+    for (let i = 0; i < g.size; i++) if (state.gen.ctx.state[i] === 1) carved++;
+    $('r-cells').textContent = carved.toLocaleString();
+    $('r-passages').textContent = pct(carved / g.size);
+    return;
+  }
+  if (!m) return;
+
+  $('r-cells').textContent = m.cells.toLocaleString();
+  $('r-passages').textContent = m.passages.toLocaleString();
+  $('r-dead').textContent = m.deadEnds.toLocaleString();
+  $('r-junctions').textContent = m.junctions.toLocaleString();
+  $('r-loops').textContent = m.loops.toLocaleString();
+  $('r-diameter').textContent = m.diameter.toLocaleString();
+
+  const path = state.solve && state.solve.ctx.path;
+  $('r-route').innerHTML = path && path.length
+    ? `${path.length - 1}<small> steps</small>`
+    : '<small>not traced</small>';
+
+  let opened = 0;
+  if (state.solve) for (let i = 0; i < state.solve.ctx.seen.length; i++) if (state.solve.ctx.seen[i] === 1) opened++;
+  $('r-opened').innerHTML = state.solve ? `${pct(opened / m.cells)}` : '<small>—</small>';
+
+  meter('dead', m.deadEndRatio, 0.45, pct(m.deadEndRatio));
+  meter('twist', m.twistiness, 1, pct(m.twistiness));
+  bipolar('grain', m.grain, m.grain === 0 ? 'even' : `${m.grain > 0 ? 'E–W' : 'N–S'} ${pct(Math.abs(m.grain))}`);
+}
+
+function meter(id, value, scale, label) {
+  $(`m-${id}`).textContent = label;
+  $(`b-${id}`).style.width = `${Math.min(100, (value / scale) * 100)}%`;
+}
+
+function bipolar(id, value, label) {
+  $(`m-${id}`).textContent = label;
+  const bar = $(`b-${id}`);
+  const half = Math.min(50, Math.abs(value) * 50);
+  bar.style.left = value >= 0 ? '50%' : `${50 - half}%`;
+  bar.style.width = `${half}%`;
+}
+
+function syncCaption() {
+  const g = state.grid;
+  $('caption').innerHTML =
+    `Fig. 1 — <b>${GENERATORS[state.algorithm].label}</b>, ${g.w} × ${g.h} cells, seed “${state.seedText}”.`;
+  $('note-algo').textContent = GENERATORS[state.algorithm].note;
+  $('note-solver').textContent = SOLVERS[state.solver].note;
+}
+
+/* ---- wiring -------------------------------------------------------- */
+
+function buildOptions() {
+  $('algorithm').innerHTML = Object.entries(GENERATORS)
+    .map(([k, v]) => `<option value="${k}">${v.label}</option>`).join('');
+  $('solver').innerHTML = Object.entries(SOLVERS)
+    .map(([k, v]) => `<option value="${k}">${v.label}</option>`).join('');
+  $('algorithm').value = state.algorithm;
+  $('solver').value = state.solver;
+}
+
+function wire() {
+  $('algorithm').addEventListener('change', (e) => {
+    state.algorithm = e.target.value;
+    $('note-algo').textContent = GENERATORS[state.algorithm].note;
+    carve(false);
+  });
+
+  $('cols').addEventListener('input', (e) => {
+    state.cols = +e.target.value;
+    $('cols-value').textContent = `${state.cols} × ${rowsFor(state.cols)}`;
+  });
+  $('cols').addEventListener('change', () => carve(true));
+
+  $('seed').addEventListener('change', (e) => {
+    state.seedText = e.target.value.trim() || 'minotaur';
+    e.target.value = state.seedText;
+    carve(true);
+  });
+
+  $('reroll').addEventListener('click', () => {
+    const word = SEED_WORDS[Math.floor(Math.random() * SEED_WORDS.length)];
+    state.seedText = `${word}-${Math.floor(Math.random() * 900 + 100)}`;
+    $('seed').value = state.seedText;
+    carve(false);
+  });
+
+  $('speed').addEventListener('input', (e) => {
+    state.speed = +e.target.value;
+    $('speed-value').textContent = SPEED_LABELS[state.speed];
+  });
+
+  $('braid').addEventListener('input', (e) => {
+    state.braidAmount = +e.target.value / 100;
+    $('braid-value').textContent = e.target.value === '0' ? 'none' : `${e.target.value}%`;
+  });
+  $('braid').addEventListener('change', applyBraid);
+
+  for (const btn of document.querySelectorAll('.segmented button')) {
+    btn.addEventListener('click', () => {
+      state.paint = btn.dataset.paint;
+      for (const other of document.querySelectorAll('.segmented button')) {
+        other.setAttribute('aria-pressed', String(other === btn));
+      }
+      render();
+    });
+  }
+
+  $('solver').addEventListener('change', (e) => {
+    state.solver = e.target.value;
+    $('note-solver').textContent = SOLVERS[state.solver].note;
+    trace(false);
+  });
+
+  $('carve').addEventListener('click', () => carve(false));
+  $('trace').addEventListener('click', () => trace(false));
+
+  canvas.addEventListener('mousemove', (e) => {
+    const i = cellAt(e.clientX, e.clientY);
+    if (i === state.hover) return;
+    state.hover = i;
+    probe(i);
+    render();
+  });
+  canvas.addEventListener('mouseleave', () => { state.hover = -1; probe(-1); render(); });
+
+  canvas.addEventListener('click', (e) => {
+    const i = cellAt(e.clientX, e.clientY);
+    if (i < 0 || state.gen) return;
+    if (e.shiftKey) state.goal = i; else state.start = i;
+    recomputeField();
+    state.solve = null;
+    render();
+    updateReadouts();
+    probe(i);
+  });
+
+  window.addEventListener('keydown', (e) => {
+    if (e.target.matches('input, select, textarea')) return;
+    if (e.key === 'g' || e.key === 'G') { carve(false); e.preventDefault(); }
+    if (e.key === 't' || e.key === 'T') { trace(false); e.preventDefault(); }
+    if (e.key === 'r' || e.key === 'R') { $('reroll').click(); e.preventDefault(); }
+  });
+
+  const ro = new ResizeObserver(() => {
+    const before = state.grid ? state.grid.h : 0;
+    resize();
+    if (state.grid && rowsFor(state.cols) !== before) $('cols-value').textContent = `${state.cols} × ${state.grid.h}`;
+  });
+  ro.observe(canvas.parentElement);
+}
+
+function probe(i) {
+  const el = $('probe');
+  if (i < 0 || !state.grid) { el.textContent = ''; return; }
+  const g = state.grid;
+  const d = state.dist ? state.dist[i] : -1;
+  const roles = [];
+  if (i === state.start) roles.push('start');
+  if (i === state.goal) roles.push('goal');
+  el.textContent = `x ${g.cx(i)}  y ${g.cy(i)}   d ${d < 0 ? '∞' : d}` + (roles.length ? `   ${roles.join(' · ')}` : '');
+}
+
+function boot() {
+  buildOptions();
+  wire();
+  $('cols').value = state.cols;
+  $('speed').value = state.speed;
+  $('speed-value').textContent = SPEED_LABELS[state.speed];
+  $('seed').value = state.seedText;
+  resize();
+  $('cols-value').textContent = `${state.cols} × ${rowsFor(state.cols)}`;
+  // Open on a finished plate rather than an empty frame.
+  carve(true);
+  trace(true);
+}
+
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+else boot();
+
+})();
+</script>

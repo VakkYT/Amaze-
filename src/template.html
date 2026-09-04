@@ -1,0 +1,122 @@
+<title>Amaze</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Spectral:ital,wght@0,300;0,600;1,400&display=swap">
+<style>
+/*__STYLE__*/
+</style>
+
+<div class="shell">
+  <header class="masthead">
+    <div class="mark">
+      <h1>Amaze</h1>
+      <p>Nine ways to carve a labyrinth. Each one leaves a fingerprint — watch it appear, then measure it.</p>
+    </div>
+    <dl class="specimen">
+      <div><dt>Method</dt><dd id="chip-algo">—</dd></div>
+      <div><dt>Field</dt><dd id="chip-dim">—</dd></div>
+      <div><dt>Seed</dt><dd id="chip-seed">—</dd></div>
+    </dl>
+  </header>
+
+  <div class="work">
+    <figure class="plate">
+      <div class="frame">
+        <canvas id="stage"></canvas>
+        <div class="probe" id="probe"></div>
+      </div>
+      <figcaption id="caption">Fig. 1</figcaption>
+      <p class="hint">Click any cell to move the origin of the distance field · shift-click to move the goal · <kbd>G</kbd> carve · <kbd>T</kbd> trace · <kbd>R</kbd> reseed</p>
+      <dl class="readouts">
+        <div class="stat"><dt>Cells</dt><dd id="r-cells">—</dd></div>
+        <div class="stat"><dt>Passages</dt><dd id="r-passages">—</dd></div>
+        <div class="stat"><dt>Dead ends</dt><dd id="r-dead">—</dd></div>
+        <div class="stat"><dt>Junctions</dt><dd id="r-junctions">—</dd></div>
+        <div class="stat"><dt>Loops</dt><dd id="r-loops">—</dd></div>
+        <div class="stat"><dt>Diameter</dt><dd id="r-diameter">—</dd></div>
+        <div class="stat"><dt>Route</dt><dd id="r-route">—</dd></div>
+        <div class="stat"><dt>Cells opened</dt><dd id="r-opened">—</dd></div>
+      </dl>
+    </figure>
+
+    <aside class="rail">
+      <div class="row solo">
+        <button class="primary" id="carve">Carve a new maze</button>
+      </div>
+
+      <section class="group">
+        <h2>Method</h2>
+        <div class="field">
+          <select id="algorithm" aria-label="Generation algorithm"></select>
+        </div>
+        <p class="note" id="note-algo"></p>
+      </section>
+
+      <section class="group">
+        <h2>Field</h2>
+        <div class="field">
+          <div class="slider-head"><label for="cols">Resolution</label><b id="cols-value">—</b></div>
+          <input type="range" id="cols" min="8" max="72" step="1" value="34">
+        </div>
+        <div class="field">
+          <label for="seed">Seed</label>
+          <div class="seed-row">
+            <input type="text" id="seed" spellcheck="false" autocomplete="off">
+            <button id="reroll" title="New random seed">Reseed</button>
+          </div>
+        </div>
+        <div class="field">
+          <div class="slider-head"><label for="braid">Braiding</label><b id="braid-value">none</b></div>
+          <input type="range" id="braid" min="0" max="100" step="5" value="0">
+          <p class="note">Braiding reopens dead ends into loops, so the maze stops being a tree and starts having choices.</p>
+        </div>
+      </section>
+
+      <section class="group">
+        <h2>Plate</h2>
+        <div class="field">
+          <div class="segmented" role="group" aria-label="Rendering">
+            <button data-paint="passages" aria-pressed="false">Ink</button>
+            <button data-paint="distance" aria-pressed="true">Distance</button>
+            <button data-paint="walls" aria-pressed="false">Walls</button>
+          </div>
+        </div>
+        <div class="field">
+          <div class="slider-head"><label for="speed">Pace</label><b id="speed-value">—</b></div>
+          <input type="range" id="speed" min="0" max="8" step="1" value="5">
+        </div>
+      </section>
+
+      <section class="group">
+        <h2>Route</h2>
+        <div class="field">
+          <select id="solver" aria-label="Solving algorithm"></select>
+        </div>
+        <p class="note" id="note-solver"></p>
+        <div class="row solo"><button id="trace">Trace the route</button></div>
+      </section>
+      <section class="group signature">
+        <h2>Signature</h2>
+        <div class="meter">
+          <div class="meter-head"><span>Dead ends</span><b id="m-dead">—</b></div>
+          <div class="track"><i id="b-dead"></i></div>
+          <div class="scale"><span>0%</span><span>45% of cells</span></div>
+        </div>
+        <div class="meter">
+          <div class="meter-head"><span>Twistiness</span><b id="m-twist">—</b></div>
+          <div class="track"><i id="b-twist"></i></div>
+          <div class="scale"><span>straight runs</span><span>all corners</span></div>
+        </div>
+        <div class="meter">
+          <div class="meter-head"><span>Grain</span><b id="m-grain">—</b></div>
+          <div class="track bipolar"><i id="b-grain"></i></div>
+          <div class="scale"><span>north–south</span><span>east–west</span></div>
+        </div>
+      </section>
+    </aside>
+  </div>
+
+</div>
+
+<script>
+/*__SCRIPT__*/
+</script>
