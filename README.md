@@ -65,3 +65,19 @@ no one-way links, and identical output for identical seeds. They also check
 that braiding removes dead ends without severing the maze, that BFS and A*
 agree on distance while A* opens fewer cells, and that every solver returns a
 path you can actually walk.
+
+## Also in this repo — Salón Tricolor
+
+`salon/` is a second plate, built the same way: a beauty salon for Colombian
+public figures. Nine parametric cartoon avatars, a face you make up in layers,
+a hand of five nails you file, paint and decorate, and a jury that scores the
+result on harmony, daring, campaign coherence and production. Same shape as
+Amaze — a testable DOM-free engine, a canvas painter, and a build that splices
+everything into one self-contained page.
+
+```sh
+node --test salon/test/engine.test.mjs   # 13 checks
+node salon/build.mjs                     # -> salon/dist/salon.html
+```
+
+See [salon/README.md](salon/README.md) (in Spanish, like the app itself).

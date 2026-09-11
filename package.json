@@ -1,11 +1,15 @@
 {
   "name": "amaze",
   "version": "1.0.0",
-  "description": "An interactive plate for maze generation and solving algorithms",
+  "description": "An interactive plate for maze generation and solving algorithms, plus Salón Tricolor",
   "type": "module",
   "private": true,
   "scripts": {
-    "test": "node --test test/engine.test.mjs",
-    "build": "node build.mjs"
+    "test": "node --test test/engine.test.mjs salon/test/engine.test.mjs",
+    "test:amaze": "node --test test/engine.test.mjs",
+    "test:salon": "node --test salon/test/engine.test.mjs",
+    "build": "node build.mjs && node salon/build.mjs",
+    "build:amaze": "node build.mjs",
+    "build:salon": "node salon/build.mjs"
   }
 }

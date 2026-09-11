@@ -1,0 +1,2484 @@
+<title>Salón Tricolor</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Spectral:ital,wght@0,300;0,600;1,400&display=swap">
+<style>
+/* Salón Tricolor — dos láminas de salón.
+   Claro: papel rosado bajo luz de tocador. Oscuro: el salón a las once
+   de la noche, con el neón todavía prendido.
+   Cada color es un token declarado primero en :root pelado, para que el
+   documento sin estampar (tema del sistema) siempre resuelva. */
+
+:root {
+  --bg: #f2e6e2;
+  --panel: #faf1ee;
+  --sunk: #ecdcd7;
+  --plate: #f6e7e3;
+  --rule: #dfc6bf;
+  --rule-soft: #ead7d1;
+
+  --ink: #2a1620;
+  --ink-2: #6b4a56;
+  --ink-3: #9a7b85;
+
+  --accent: #b62a6a;
+  --accent-hi: #8d1b51;
+  --accent-soft: rgba(182, 42, 106, 0.10);
+  --accent-line: rgba(182, 42, 106, 0.34);
+
+  --oro: #b98b2a;
+  --shadow: 0 1px 2px rgba(60, 20, 40, 0.07), 0 10px 28px -20px rgba(60, 20, 40, 0.55);
+
+  --step: 4px;
+  --sans: "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --serif: Spectral, ui-serif, Georgia, "Times New Roman", serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #140e13;
+    --panel: #1c141a;
+    --sunk: #150f14;
+    --plate: #241a21;
+    --rule: #3a2b35;
+    --rule-soft: #2a1f27;
+
+    --ink: #f1e4e8;
+    --ink-2: #b79faa;
+    --ink-3: #7d6771;
+
+    --accent: #ff7ab0;
+    --accent-hi: #ffa6c9;
+    --accent-soft: rgba(255, 122, 176, 0.13);
+    --accent-line: rgba(255, 122, 176, 0.4);
+
+    --oro: #e3b341;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.45), 0 12px 34px -22px rgba(0, 0, 0, 0.9);
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #140e13;
+  --panel: #1c141a;
+  --sunk: #150f14;
+  --plate: #241a21;
+  --rule: #3a2b35;
+  --rule-soft: #2a1f27;
+  --ink: #f1e4e8;
+  --ink-2: #b79faa;
+  --ink-3: #7d6771;
+  --accent: #ff7ab0;
+  --accent-hi: #ffa6c9;
+  --accent-soft: rgba(255, 122, 176, 0.13);
+  --accent-line: rgba(255, 122, 176, 0.4);
+  --oro: #e3b341;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.45), 0 12px 34px -22px rgba(0, 0, 0, 0.9);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+.shell {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding-block: calc(var(--step) * 7);
+  padding-left: calc(var(--step) * 5);
+  padding-right: calc(var(--step) * 5);
+}
+
+/* ------------------------------------------------------------ cabecera - */
+
+.masthead {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--step) * 5);
+  align-items: flex-end;
+  justify-content: space-between;
+  padding-bottom: calc(var(--step) * 4);
+  border-bottom: 1px solid var(--rule);
+}
+
+.mark h1 {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: clamp(30px, 6vw, 46px);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+}
+
+.mark p {
+  margin: calc(var(--step) * 2) 0 0;
+  max-width: 52ch;
+  color: var(--ink-2);
+  font-family: var(--serif);
+  font-size: 16px;
+  font-style: italic;
+  font-weight: 300;
+}
+
+.specimen {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--step) * 5);
+  margin: 0;
+}
+
+.specimen dt {
+  color: var(--ink-3);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.specimen dd {
+  margin: 2px 0 0;
+  font-family: var(--mono);
+  font-size: 14px;
+  color: var(--ink);
+}
+
+/* --------------------------------------------------------------- taller - */
+
+.work {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: calc(var(--step) * 6);
+  margin-top: calc(var(--step) * 6);
+  align-items: start;
+}
+
+.lienzos {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--step) * 6);
+  min-width: 0;
+}
+
+.plates {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: calc(var(--step) * 4);
+}
+
+.plate { margin: 0; }
+
+.frame {
+  position: relative;
+  border: 1px solid var(--rule);
+  border-radius: calc(var(--step) * 2);
+  background: var(--plate);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  aspect-ratio: 1 / 1;
+}
+
+.frame canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+figcaption {
+  margin-top: calc(var(--step) * 2);
+  color: var(--ink-3);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.hint {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--ink-3);
+  font-size: 12.5px;
+}
+
+kbd {
+  padding: 1px 5px;
+  border: 1px solid var(--rule);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  background: var(--panel);
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-2);
+}
+
+/* ------------------------------------------------------------- controles - */
+
+.rail {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--step) * 4);
+  position: sticky;
+  top: calc(var(--step) * 4);
+}
+
+.group {
+  padding: calc(var(--step) * 4);
+  border: 1px solid var(--rule);
+  border-radius: calc(var(--step) * 2);
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.group + .group { margin-top: calc(var(--step) * 4); }
+
+.group h2 {
+  margin: 0 0 calc(var(--step) * 3);
+  color: var(--ink-3);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.field + .field { margin-top: calc(var(--step) * 4); }
+
+.field > label,
+.slider-head label {
+  display: block;
+  margin-bottom: calc(var(--step) * 1.5);
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--ink-2);
+}
+
+.slider-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--step);
+}
+
+.slider-head b {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--accent);
+}
+
+input[type="range"] {
+  width: 100%;
+  margin: 0;
+  accent-color: var(--accent);
+}
+
+input[type="text"] {
+  width: 100%;
+  min-width: 0;
+  padding: calc(var(--step) * 1.5) calc(var(--step) * 2);
+  border: 1px solid var(--rule);
+  border-radius: var(--step);
+  background: var(--sunk);
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 12px;
+}
+
+input[type="text"]:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.seed-row {
+  display: flex;
+  gap: var(--step);
+}
+
+.row {
+  display: flex;
+  gap: var(--step);
+}
+
+.row + .row { margin-top: var(--step); }
+
+.row button { flex: 1; }
+
+button {
+  padding: calc(var(--step) * 1.75) calc(var(--step) * 2.5);
+  border: 1px solid var(--rule);
+  border-radius: var(--step);
+  background: var(--panel);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
+}
+
+button:hover:not(:disabled) { border-color: var(--accent-line); color: var(--accent); }
+button:disabled { opacity: 0.4; cursor: default; }
+
+button.primary {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fff;
+}
+
+:root[data-theme="dark"] button.primary,
+:root:not([data-theme="light"]) button.primary { color: #1b0f16; }
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) button.primary { color: #fff; }
+}
+
+button.primary:hover { background: var(--accent-hi); border-color: var(--accent-hi); color: #fff; }
+
+.segmented {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid var(--rule);
+  border-radius: var(--step);
+  background: var(--sunk);
+}
+
+.segmented button {
+  flex: 1 1 auto;
+  padding: calc(var(--step) * 1.25) var(--step);
+  border: 0;
+  border-radius: calc(var(--step) - 1px);
+  background: transparent;
+  color: var(--ink-2);
+  font-size: 11.5px;
+  white-space: nowrap;
+}
+
+.segmented button[aria-pressed="true"] {
+  background: var(--panel);
+  color: var(--accent);
+  box-shadow: var(--shadow);
+}
+
+.turno {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--step);
+}
+
+.turno > button { flex: 1 1 128px; }
+.turno .seed-row { flex: 2 1 240px; }
+
+.panels { margin: 0; }
+.panels button { padding: calc(var(--step) * 2) var(--step); font-size: 13px; }
+
+/* --------------------------------------------------------------- paletas - */
+
+.swatches {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(30px, 1fr));
+  gap: calc(var(--step) * 1.5);
+}
+
+.swatch {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  padding: 0;
+  border: 1px solid var(--rule);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.swatch[aria-pressed="true"] {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-color: var(--panel);
+}
+
+.swatch.none {
+  background: linear-gradient(135deg, transparent 44%, var(--rule) 44%, var(--rule) 56%, transparent 56%) !important;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--step);
+}
+
+.chips button {
+  border-radius: 999px;
+  font-size: 11.5px;
+}
+
+.chips button[aria-pressed="true"] {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.figuras {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: var(--step);
+}
+
+.figuras button {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--step) * 1.5);
+  padding: calc(var(--step) * 1.5);
+  text-align: left;
+  line-height: 1.2;
+}
+
+.figuras button[aria-pressed="true"] {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.figuras i {
+  flex: 0 0 auto;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid var(--rule);
+}
+
+.figuras span { font-size: 11.5px; }
+.figuras small {
+  display: block;
+  color: var(--ink-3);
+  font-size: 10px;
+}
+
+.note {
+  margin: calc(var(--step) * 1.5) 0 0;
+  color: var(--ink-3);
+  font-size: 11.5px;
+  line-height: 1.45;
+}
+
+.note.error { color: var(--accent); }
+
+/* ---------------------------------------------------------------- jurado - */
+
+.jurado {
+  padding: calc(var(--step) * 5);
+  border: 1px solid var(--rule);
+  border-radius: calc(var(--step) * 2);
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.jurado h2 {
+  margin: 0 0 calc(var(--step) * 4);
+  color: var(--ink-3);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.medidores {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: calc(var(--step) * 4) calc(var(--step) * 5);
+}
+
+.meter-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--step);
+  font-size: 12.5px;
+  color: var(--ink-2);
+}
+
+.meter-head b {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--ink);
+}
+
+.track {
+  height: 6px;
+  margin: calc(var(--step) * 1.5) 0 var(--step);
+  border-radius: 999px;
+  background: var(--sunk);
+  overflow: hidden;
+}
+
+.track i {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: 999px;
+  background: var(--accent);
+  transition: width 0.28s ease;
+}
+
+.scale {
+  display: flex;
+  justify-content: space-between;
+  color: var(--ink-3);
+  font-size: 10px;
+}
+
+.veredicto {
+  margin: calc(var(--step) * 5) 0 0;
+  padding-top: calc(var(--step) * 4);
+  border-top: 1px solid var(--rule-soft);
+  font-family: var(--serif);
+  font-size: 18px;
+  font-style: italic;
+  font-weight: 300;
+  color: var(--ink);
+}
+
+.nota-pie {
+  margin-top: calc(var(--step) * 6);
+  padding-top: calc(var(--step) * 4);
+  border-top: 1px solid var(--rule);
+}
+
+.nota-pie p {
+  margin: 0;
+  max-width: 78ch;
+  color: var(--ink-3);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+/* ------------------------------------------------------------ estrechez - */
+
+/* En una columna el orden cambia: primero a quién se maquilla, luego las
+   láminas, y enseguida las herramientas — el jurado y el turno van al final. */
+@media (max-width: 900px) {
+  .work {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .lienzos { display: contents; }
+  .elenco { order: 1; }
+  .plates { order: 2; }
+  .rail { order: 3; position: static; }
+  .jurado { order: 4; }
+  .acciones { order: 5; }
+}
+
+@media (max-width: 520px) {
+  .shell {
+    padding-left: calc(var(--step) * 4);
+    padding-right: calc(var(--step) * 4);
+  }
+  .masthead { gap: calc(var(--step) * 3); }
+  .specimen { gap: calc(var(--step) * 4); }
+  .plates { grid-template-columns: minmax(0, 1fr); }
+  .jurado { padding: calc(var(--step) * 4); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .track i { transition: none; }
+}
+</style>
+
+<div class="shell">
+  <header class="masthead">
+    <div class="mark">
+      <h1>Salón Tricolor</h1>
+      <p>Maquillaje y manicura para la clase política colombiana. Nueve caricaturas, cinco uñas y un jurado que no perdona.</p>
+    </div>
+    <dl class="specimen">
+      <div><dt>En la silla</dt><dd id="chip-figura">—</dd></div>
+      <div><dt>Uñas</dt><dd id="chip-unas">—</dd></div>
+      <div><dt>Nota</dt><dd id="chip-nota">—</dd></div>
+    </dl>
+  </header>
+
+  <div class="work">
+    <div class="lienzos">
+      <section class="group elenco">
+        <h2>En la silla</h2>
+        <div class="figuras" id="figuras"></div>
+      </section>
+
+      <section class="plates">
+        <figure class="plate">
+          <div class="frame"><canvas id="rostro"></canvas></div>
+          <figcaption>Fig. 1 — Rostro</figcaption>
+        </figure>
+        <figure class="plate">
+          <div class="frame"><canvas id="manos"></canvas></div>
+          <figcaption>Fig. 2 — Manos</figcaption>
+        </figure>
+        <p class="hint">Toque los labios, los ojos o las mejillas para saltar a esa herramienta · toque una uña para acentuarla · <kbd>A</kbd> azar · <kbd>Z</kbd> deshacer · <kbd>Y</kbd> rehacer</p>
+      </section>
+
+      <section class="jurado">
+        <h2>El jurado</h2>
+        <div class="medidores">
+          <div class="meter">
+            <div class="meter-head"><span>Armonía</span><b id="m-armonia">—</b></div>
+            <div class="track"><i id="b-armonia"></i></div>
+            <div class="scale"><span>se pelean</span><span>conversan</span></div>
+          </div>
+          <div class="meter">
+            <div class="meter-head"><span>Atrevimiento</span><b id="m-atrevimiento">—</b></div>
+            <div class="track"><i id="b-atrevimiento"></i></div>
+            <div class="scale"><span>misa de siete</span><span>carnaval</span></div>
+          </div>
+          <div class="meter">
+            <div class="meter-head"><span>Coherencia de campaña</span><b id="m-coherencia">—</b></div>
+            <div class="track"><i id="b-coherencia"></i></div>
+            <div class="scale"><span>otro partido</span><span>mismo afiche</span></div>
+          </div>
+          <div class="meter">
+            <div class="meter-head"><span>Producción</span><b id="m-produccion">—</b></div>
+            <div class="track"><i id="b-produccion"></i></div>
+            <div class="scale"><span>un toque</span><span>todo el kit</span></div>
+          </div>
+        </div>
+        <p class="veredicto" id="veredicto">—</p>
+      </section>
+
+      <section class="group acciones">
+        <h2>Turno</h2>
+        <div class="turno">
+          <button class="primary" id="azar">Sorpréndame</button>
+          <button id="limpiar">Cara lavada</button>
+          <button id="deshacer">Deshacer</button>
+          <button id="rehacer">Rehacer</button>
+          <div class="seed-row">
+            <input type="text" id="codigo" spellcheck="false" autocomplete="off" aria-label="Código del look" placeholder="Código del look">
+            <button id="cargar">Cargar</button>
+          </div>
+        </div>
+        <p class="note" id="codigo-nota">El código guarda el look entero: cópielo, páselo y se reconstruye igualito.</p>
+      </section>
+    </div>
+
+    <aside class="rail">
+      <div class="segmented panels" role="group" aria-label="Estación de trabajo">
+        <button data-panel="rostro" aria-pressed="true">Rostro</button>
+        <button data-panel="unas" aria-pressed="false">Uñas</button>
+      </div>
+
+      <div id="panels"></div>
+
+    </aside>
+  </div>
+
+
+  <footer class="nota-pie">
+    <p>Caricaturas vectoriales paramétricas, no retratos: ningún parecido es exacto y nada de lo que aparece aquí es palabra, gesto ni posición de nadie. Es un juego de salón sobre figuras públicas, repartido de lado a lado del espectro — y quien prefiera no jugar con nombres propios tiene a <em>Candidatx sin nombre</em> esperando turno.</p>
+  </footer>
+</div>
+
+<script>
+(function () {
+'use strict';
+
+/**
+ * Salón Tricolor — la lógica pura del salón.
+ *
+ * Nada de aquí toca el DOM ni el canvas: son datos (paletas, personajes,
+ * opciones), transformaciones sobre un "look" y el veredicto del jurado.
+ * Eso lo vuelve comprobable con `node --test`, y deja el dibujo en paint.js.
+ *
+ * Nota: los personajes son caricaturas vectoriales, no retratos. Es un juego
+ * de salón sobre figuras públicas, repartido de lado a lado del espectro.
+ */
+
+/* ------------------------------------------------------------------ azar - */
+
+/** mulberry32 sembrado con un hash de texto: misma semilla, mismo look. */
+function Rng(seed) {
+  let h = 2166136261 >>> 0;
+  for (const ch of String(seed)) {
+    h ^= ch.charCodeAt(0);
+    h = Math.imul(h, 16777619) >>> 0;
+  }
+  let a = h || 1;
+  const next = () => {
+    a = (a + 0x6d2b79f5) >>> 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+  next.int = (n) => Math.floor(next() * n);
+  next.pick = (list) => list[next.int(list.length)];
+  return next;
+}
+
+/* --------------------------------------------------------------- colores - */
+
+function hexToRgb(hex) {
+  const h = hex.replace('#', '');
+  const n = parseInt(h.length === 3 ? h.split('').map((c) => c + c).join('') : h, 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+
+function rgbToHex(r, g, b) {
+  const c = (v) => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0');
+  return `#${c(r)}${c(g)}${c(b)}`;
+}
+
+/** Mezcla lineal entre dos hex. t = 0 devuelve a, t = 1 devuelve b. */
+function mix(a, b, t) {
+  const [r1, g1, b1] = hexToRgb(a);
+  const [r2, g2, b2] = hexToRgb(b);
+  const k = Math.max(0, Math.min(1, t));
+  return rgbToHex(r1 + (r2 - r1) * k, g1 + (g2 - g1) * k, b1 + (b2 - b1) * k);
+}
+
+/** Aclara (amt > 0) u oscurece (amt < 0) un hex. */
+function shade(hex, amt) {
+  return amt >= 0 ? mix(hex, '#ffffff', amt) : mix(hex, '#000000', -amt);
+}
+
+/** hex + opacidad -> rgba() para las capas de maquillaje. */
+function alpha(hex, a) {
+  const [r, g, b] = hexToRgb(hex);
+  return `rgba(${r}, ${g}, ${b}, ${Math.max(0, Math.min(1, a))})`;
+}
+
+function hexToHsl(hex) {
+  const [r0, g0, b0] = hexToRgb(hex).map((v) => v / 255);
+  const max = Math.max(r0, g0, b0);
+  const min = Math.min(r0, g0, b0);
+  const l = (max + min) / 2;
+  const d = max - min;
+  if (d === 0) return [0, 0, l];
+  const s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+  let h;
+  if (max === r0) h = ((g0 - b0) / d + (g0 < b0 ? 6 : 0)) / 6;
+  else if (max === g0) h = ((b0 - r0) / d + 2) / 6;
+  else h = ((r0 - g0) / d + 4) / 6;
+  return [h * 360, s, l];
+}
+
+/* --------------------------------------------------------------- paletas - */
+
+const P = (n, c) => ({ n, c });
+
+const PALETTES = {
+  base: [
+    P('Sin base', '#00000000'),
+    P('Porcelana', '#f3ddc8'),
+    P('Arena', '#e6c4a0'),
+    P('Canela', '#cf9f72'),
+    P('Caramelo', '#b97f4f'),
+    P('Cacao', '#8c5730'),
+    P('Ébano', '#5f3a20'),
+  ],
+  rubor: [
+    P('Durazno', '#f09a72'),
+    P('Coral', '#ee6a55'),
+    P('Rosa té', '#e88ba0'),
+    P('Fucsia', '#d84a86'),
+    P('Ciruela', '#9c4266'),
+    P('Terracota', '#c1603a'),
+    P('Malva', '#b07fa8'),
+    P('Bronce', '#a7703f'),
+  ],
+  sombra: [
+    P('Champaña', '#e6cfa8'),
+    P('Miel', '#d29b4c'),
+    P('Cobre', '#b8632f'),
+    P('Vino', '#7a2f42'),
+    P('Ciruela', '#5c3b76'),
+    P('Índigo', '#2f3f8f'),
+    P('Turquesa', '#1f8f8a'),
+    P('Esmeralda', '#1c7a4b'),
+    P('Grafito', '#3a3a42'),
+    P('Oliva', '#6f7434'),
+  ],
+  labial: [
+    P('Nude', '#c88a76'),
+    P('Palo de rosa', '#c9707c'),
+    P('Rojo tinto', '#a31f34'),
+    P('Rojo bandera', '#d81f26'),
+    P('Coral', '#ef6a4c'),
+    P('Fucsia', '#cf2f7f'),
+    P('Vino', '#6f1f38'),
+    P('Ciruela oscura', '#4a2038'),
+    P('Naranja pop', '#f0722a'),
+    P('Chocolate', '#7a4530'),
+  ],
+  esmalte: [
+    P('Transparente', '#efe6de'),
+    P('Blanco leche', '#f6f3ec'),
+    P('Rosa bebé', '#f0c3cb'),
+    P('Rojo bandera', '#d4212a'),
+    P('Vino', '#6d1c33'),
+    P('Naranja mango', '#f07d23'),
+    P('Amarillo maracuyá', '#f5c518'),
+    P('Verde monte', '#1f7a4d'),
+    P('Azul Caribe', '#1b6fb5'),
+    P('Azul noche', '#22305c'),
+    P('Lila', '#9a6fc4'),
+    P('Negro charol', '#1b1b1f'),
+  ],
+  arte: [
+    P('Blanco', '#fdfbf6'),
+    P('Negro', '#16161a'),
+    P('Oro', '#e3b341'),
+    P('Plata', '#cfd4da'),
+    P('Rojo', '#d4212a'),
+    P('Azul', '#1b6fb5'),
+    P('Verde', '#1f9d55'),
+    P('Fucsia', '#d63384'),
+  ],
+};
+
+const O = (id, n) => ({ id, n });
+
+const OPTIONS = {
+  sombraEstilo: [O('suave', 'Difuminada'), O('gato', 'Ojo de gato'), O('humo', 'Ahumada'), O('corte', 'Corte agudo')],
+  delineador: [O('ninguno', 'Sin delinear'), O('fino', 'Fino'), O('alado', 'Alado'), O('grafico', 'Gráfico')],
+  pestanas: [O('natural', 'Naturales'), O('rizadas', 'Rizadas'), O('dramaticas', 'De telenovela')],
+  cejas: [O('natural', 'Naturales'), O('definidas', 'Definidas'), O('laminadas', 'Laminadas')],
+  labialAcabado: [O('mate', 'Mate'), O('gloss', 'Gloss'), O('metalico', 'Metálico')],
+  forma: [O('redonda', 'Redonda'), O('ovalada', 'Ovalada'), O('almendra', 'Almendra'), O('cuadrada', 'Cuadrada'), O('coffin', 'Coffin'), O('stiletto', 'Stiletto')],
+  acabado: [O('brillante', 'Brillante'), O('mate', 'Mate'), O('cromado', 'Cromado')],
+  arte: [
+    O('ninguno', 'Liso'), O('frances', 'Francés'), O('puntos', 'Puntos'), O('rayas', 'Rayas'),
+    O('estrellas', 'Estrellas'), O('flores', 'Flores'), O('degradado', 'Degradado'), O('tricolor', 'Tricolor'),
+  ],
+};
+
+const EXTRAS = [
+  O('lunar', 'Lunar'),
+  O('pecas', 'Pecas'),
+  O('purpurina', 'Purpurina'),
+  O('pedreria', 'Pedrería'),
+  O('antifaz', 'Antifaz de brillo'),
+];
+
+/* ------------------------------------------------------------ personajes - */
+
+/**
+ * Rasgos de dibujo (piel, pelo, gafas) más una "paleta de campaña": dos
+ * colores que el jurado usa para medir coherencia. No hay nada político
+ * codificado aquí; son parámetros de trazo y dos hex.
+ */
+const FIGURES = [
+  {
+    id: 'petro', nombre: 'Gustavo Petro', cargo: 'Presidente',
+    piel: '#d8a97f', cabello: '#c6c2b9', pelo: 'ondulado', vello: 'ninguno',
+    gafas: 'ninguno', cejas: 3, traje: '#1e2c46', corbata: '#b4322f',
+    campana: ['#f2b705', '#c4342a'],
+  },
+  {
+    id: 'francia', nombre: 'Francia Márquez', cargo: 'Vicepresidenta',
+    piel: '#7c4b2e', cabello: '#1d1512', pelo: 'turbante', vello: 'ninguno',
+    gafas: 'ninguno', cejas: 2, traje: '#1f6d57', corbata: null, aretes: true,
+    tocado: '#18906d', campana: ['#18906d', '#f2b705'],
+  },
+  {
+    id: 'uribe', nombre: 'Álvaro Uribe', cargo: 'Expresidente',
+    piel: '#dbb18b', cabello: '#b8b2a7', pelo: 'peinado', vello: 'ninguno',
+    gafas: 'ninguno', cejas: 3, traje: '#25324a', corbata: '#2a5fa8',
+    campana: ['#2a5fa8', '#d8d3c6'],
+  },
+  {
+    id: 'fajardo', nombre: 'Sergio Fajardo', cargo: 'Exgobernador',
+    piel: '#dcae86', cabello: '#cecbc4', pelo: 'rizado', vello: 'ninguno',
+    gafas: 'ninguno', cejas: 2, traje: '#2f4a45', corbata: null,
+    campana: ['#2fa37a', '#f2f0e6'],
+  },
+  {
+    id: 'claudia', nombre: 'Claudia López', cargo: 'Exalcaldesa',
+    piel: '#e0b895', cabello: '#6b4a33', pelo: 'corto-fem', vello: 'ninguno',
+    gafas: 'rect', cejas: 2, traje: '#3b4a63', corbata: null, aretes: true,
+    campana: ['#1f9f4d', '#f2c249'],
+  },
+  {
+    id: 'fico', nombre: 'Federico Gutiérrez', cargo: 'Alcalde',
+    piel: '#d8a87e', cabello: '#2f2620', pelo: 'peinado', vello: 'ninguno',
+    gafas: 'ninguno', cejas: 3, traje: '#213a5c', corbata: '#f28c28',
+    campana: ['#1f6fb2', '#f28c28'],
+  },
+  {
+    id: 'cabal', nombre: 'María Fernanda Cabal', cargo: 'Senadora',
+    piel: '#e3bd9a', cabello: '#c8a463', pelo: 'melena', vello: 'ninguno',
+    gafas: 'ninguno', cejas: 2, traje: '#1e4f9c', corbata: null, aretes: true,
+    campana: ['#1e4f9c', '#d8d3c6'],
+  },
+  {
+    id: 'duque', nombre: 'Iván Duque', cargo: 'Expresidente',
+    piel: '#d9ac84', cabello: '#241d18', pelo: 'peinado', vello: 'ninguno',
+    gafas: 'ninguno', cejas: 2, traje: '#1c3f74', corbata: '#e0742a',
+    campana: ['#e0742a', '#1c3f74'],
+  },
+  {
+    id: 'generico', nombre: 'Candidatx sin nombre', cargo: 'Aspirante',
+    piel: '#c89468', cabello: '#3a2d24', pelo: 'corto', vello: 'barba',
+    gafas: 'redondo', cejas: 2, traje: '#4a4a55', corbata: '#8a8a99',
+    campana: ['#8a8a99', '#d9d4c8'],
+  },
+];
+
+const figureById = (id) => FIGURES.find((f) => f.id === id) || FIGURES[0];
+
+/* ------------------------------------------------------------------ look - */
+
+/**
+ * Un look es plano y numérico a propósito: cada campo es un índice o un
+ * entero pequeño, así que cabe entero en un código de texto compartible.
+ */
+const FIELDS = {
+  base: { kind: 'palette', pal: 'base' },
+  contorno: { kind: 'range', max: 3 },
+  brillo: { kind: 'range', max: 3 },
+  rubor: { kind: 'palette', pal: 'rubor' },
+  ruborInt: { kind: 'range', max: 3 },
+  sombra: { kind: 'palette', pal: 'sombra' },
+  sombraEstilo: { kind: 'option', opt: 'sombraEstilo' },
+  delineador: { kind: 'option', opt: 'delineador' },
+  pestanas: { kind: 'option', opt: 'pestanas' },
+  cejas: { kind: 'option', opt: 'cejas' },
+  labial: { kind: 'palette', pal: 'labial' },
+  labialAcabado: { kind: 'option', opt: 'labialAcabado' },
+  extras: { kind: 'bits', list: EXTRAS },
+  forma: { kind: 'option', opt: 'forma' },
+  largo: { kind: 'range', max: 3 },
+  esmalte: { kind: 'palette', pal: 'esmalte' },
+  acabado: { kind: 'option', opt: 'acabado' },
+  arte: { kind: 'option', opt: 'arte' },
+  arteColor: { kind: 'palette', pal: 'arte' },
+  acento: { kind: 'range', max: 5 },   // 0 = ninguna, 1..5 = uña acentuada
+};
+
+/** Orden estable de los campos: define el código y no debe reordenarse. */
+const FIELD_ORDER = Object.keys(FIELDS);
+
+function limit(key) {
+  const f = FIELDS[key];
+  if (f.kind === 'palette') return PALETTES[f.pal].length - 1;
+  if (f.kind === 'option') return OPTIONS[f.opt].length - 1;
+  if (f.kind === 'bits') return (1 << f.list.length) - 1;
+  return f.max;
+}
+
+const clamp = (v, hi) => (Number.isFinite(v) ? Math.max(0, Math.min(hi, Math.round(v))) : 0);
+
+function defaultLook(figura = FIGURES[0].id) {
+  return {
+    figura: figureById(figura).id,
+    base: 2, contorno: 1, brillo: 1,
+    rubor: 2, ruborInt: 2,
+    sombra: 4, sombraEstilo: 0,
+    delineador: 1, pestanas: 1, cejas: 1,
+    labial: 2, labialAcabado: 1,
+    extras: 0,
+    forma: 2, largo: 2,
+    esmalte: 3, acabado: 0,
+    arte: 1, arteColor: 0,
+    acento: 4,
+  };
+}
+
+/** Devuelve un look nuevo con un campo cambiado (o el mismo si no cambia). */
+function apply(look, key, value) {
+  if (key === 'figura') {
+    const id = figureById(value).id;
+    return id === look.figura ? look : { ...look, figura: id };
+  }
+  if (!(key in FIELDS)) throw new Error(`campo desconocido: ${key}`);
+  const v = clamp(value, limit(key));
+  return v === look[key] ? look : { ...look, [key]: v };
+}
+
+/** Prende o apaga un extra por id. */
+function toggleExtra(look, id) {
+  const i = EXTRAS.findIndex((e) => e.id === id);
+  if (i < 0) return look;
+  return { ...look, extras: look.extras ^ (1 << i) };
+}
+
+const hasExtra = (look, id) => {
+  const i = EXTRAS.findIndex((e) => e.id === id);
+  return i >= 0 && (look.extras & (1 << i)) !== 0;
+};
+
+const extrasOf = (look) => EXTRAS.filter((e) => hasExtra(look, e.id)).map((e) => e.id);
+
+/** Lee el valor de un campo como opción/colores según su tipo. */
+const optionOf = (look, key) => OPTIONS[FIELDS[key].opt][look[key]].id;
+const colorOf = (look, key) => PALETTES[FIELDS[key].pal][look[key]].c;
+
+function randomLook(seed, figura) {
+  const rng = Rng(seed);
+  const id = figura || rng.pick(FIGURES).id;
+  const look = { figura: figureById(id).id };
+  for (const key of FIELD_ORDER) look[key] = rng.int(limit(key) + 1);
+  look.base = 1 + rng.int(PALETTES.base.length - 1);   // un rostro sin base es raro de nacimiento
+  return look;
+}
+
+/* ---------------------------------------------------------------- código - */
+
+const ALPHABET = '0123456789abcdefghijklmnopqrstuvwxyz';
+const PREFIX = 'SLN1';
+
+/** Serializa un look a un código corto y legible: SLN1-<figura>-<campos><suma>. */
+function encodeLook(look) {
+  const body = FIELD_ORDER.map((k) => ALPHABET[clamp(look[k], limit(k))]).join('');
+  const fig = figureById(look.figura).id;
+  let sum = 0;
+  for (const ch of fig + body) sum = (sum + ch.charCodeAt(0)) % 36;
+  return `${PREFIX}-${fig}-${body}${ALPHABET[sum]}`;
+}
+
+/** Lee un código. Devuelve null si no es válido; nunca lanza. */
+function decodeLook(code) {
+  if (typeof code !== 'string') return null;
+  const parts = code.trim().toLowerCase().split('-');
+  if (parts.length !== 3 || parts[0] !== PREFIX.toLowerCase()) return null;
+  const [, fig, tail] = parts;
+  if (!FIGURES.some((f) => f.id === fig)) return null;
+  if (tail.length !== FIELD_ORDER.length + 1) return null;
+  const body = tail.slice(0, -1);
+  let sum = 0;
+  for (const ch of fig + body) sum = (sum + ch.charCodeAt(0)) % 36;
+  if (ALPHABET[sum] !== tail.slice(-1)) return null;
+  const look = { figura: fig };
+  for (let i = 0; i < FIELD_ORDER.length; i++) {
+    const key = FIELD_ORDER[i];
+    const v = ALPHABET.indexOf(body[i]);
+    if (v < 0) return null;
+    look[key] = clamp(v, limit(key));
+  }
+  return look;
+}
+
+/* ---------------------------------------------------------------- jurado - */
+
+function hueDist(a, b) {
+  const d = Math.abs(a - b) % 360;
+  return d > 180 ? 360 - d : d;
+}
+
+/** Curva de armonía: monocromo, análogo, triádico y complementario puntúan alto. */
+const CENTERS = [[0, 26, 1], [40, 22, 0.9], [120, 26, 0.8], [180, 26, 0.94]];
+function pairHarmony(d) {
+  let best = 0;
+  for (const [c, s, w] of CENTERS) best = Math.max(best, w * Math.exp(-((d - c) ** 2) / (2 * s * s)));
+  return best;
+}
+
+/** Colores efectivamente aplicados, con su peso en la lectura del jurado. */
+function activeColors(look) {
+  const out = [];
+  if (look.ruborInt > 0) out.push(colorOf(look, 'rubor'));
+  if (optionOf(look, 'sombraEstilo') !== 'suave' || look.sombra > 0) out.push(colorOf(look, 'sombra'));
+  out.push(colorOf(look, 'labial'));
+  out.push(colorOf(look, 'esmalte'));
+  if (optionOf(look, 'arte') !== 'ninguno') out.push(colorOf(look, 'arteColor'));
+  return out;
+}
+
+const PESO_FORMA = { redonda: 0.2, ovalada: 0.35, almendra: 0.6, cuadrada: 0.5, coffin: 0.8, stiletto: 1 };
+const PESO_SOMBRA = { suave: 0.2, gato: 0.65, humo: 0.75, corte: 1 };
+const PESO_LINEA = { ninguno: 0, fino: 0.35, alado: 0.75, grafico: 1 };
+const PESO_PESTANA = { natural: 0.15, rizadas: 0.55, dramaticas: 1 };
+
+const pct = (v) => Math.max(0, Math.min(100, Math.round(v * 100)));
+
+/** Cuatro medidores y un veredicto. Determinista: mismo look, misma lectura. */
+function judge(look) {
+  const fig = figureById(look.figura);
+  const colors = activeColors(look);
+  const cromaticos = colors.filter((c) => hexToHsl(c)[1] > 0.12);
+
+  let pares = 0;
+  let suma = 0;
+  for (let i = 0; i < cromaticos.length; i++) {
+    for (let j = i + 1; j < cromaticos.length; j++) {
+      suma += pairHarmony(hueDist(hexToHsl(cromaticos[i])[0], hexToHsl(cromaticos[j])[0]));
+      pares++;
+    }
+  }
+  const armonia = pares ? suma / pares : 0.7;
+
+  const sat = (c) => hexToHsl(c)[1];
+  const atrevimiento = mean([
+    sat(colorOf(look, 'labial')),
+    sat(colorOf(look, 'esmalte')),
+    look.ruborInt / 3,
+    PESO_SOMBRA[optionOf(look, 'sombraEstilo')],
+    PESO_LINEA[optionOf(look, 'delineador')],
+    PESO_PESTANA[optionOf(look, 'pestanas')],
+    look.largo / 3,
+    PESO_FORMA[optionOf(look, 'forma')],
+    extrasOf(look).length / EXTRAS.length,
+    optionOf(look, 'arte') === 'ninguno' ? 0 : 0.8,
+  ]);
+
+  const coherencia = cromaticos.length
+    ? mean(cromaticos.map((c) => {
+      const h = hexToHsl(c)[0];
+      return Math.max(...fig.campana.map((k) => Math.exp(-(hueDist(h, hexToHsl(k)[0]) ** 2) / (2 * 34 * 34))));
+    }))
+    : 0.5;
+
+  const lista = [
+    look.contorno > 0, look.brillo > 0, look.ruborInt > 0,
+    optionOf(look, 'delineador') !== 'ninguno',
+    optionOf(look, 'pestanas') !== 'natural',
+    optionOf(look, 'cejas') !== 'natural',
+    extrasOf(look).length > 0,
+    optionOf(look, 'arte') !== 'ninguno',
+    look.acento > 0,
+    look.largo >= 2,
+  ];
+  const produccion = lista.filter(Boolean).length / lista.length;
+
+  const m = {
+    armonia: pct(armonia),
+    atrevimiento: pct(atrevimiento),
+    coherencia: pct(coherencia),
+    produccion: pct(produccion),
+  };
+  return { ...m, veredicto: verdict(m), nota: Math.round((m.armonia * 0.4 + m.atrevimiento * 0.25 + m.coherencia * 0.2 + m.produccion * 0.15)) };
+}
+
+function mean(xs) {
+  return xs.reduce((a, b) => a + b, 0) / (xs.length || 1);
+}
+
+/** El veredicto es una función pura de los cuatro medidores. */
+function verdict({ armonia, atrevimiento, coherencia, produccion }) {
+  if (armonia >= 78 && atrevimiento >= 70 && produccion >= 60) return 'Portada de revista. El jurado se pone de pie y pide el nombre del salón.';
+  if (armonia >= 78 && atrevimiento < 35) return 'Impecable y prudente: listo para rueda de prensa a las siete de la mañana.';
+  if (atrevimiento >= 80 && armonia < 45) return 'Un acto de fe cromática. Valiente, ruidoso y absolutamente imposible de ignorar.';
+  if (coherencia >= 75 && armonia >= 55) return 'Todo combina con la campaña. Sospechosamente disciplinado.';
+  if (produccion <= 20) return 'Apenas un toque. O el turno se acabó, o esto es minimalismo militante.';
+  if (armonia < 40 && atrevimiento < 40) return 'Tibio y disparejo: el jurado carraspea y mira el reloj.';
+  if (atrevimiento >= 65) return 'Fuerte, con una idea clara. Falta afinar un tono para que no se peleen.';
+  return 'Correcto y agradable. Le falta una decisión arriesgada para volverse memorable.';
+}
+
+
+/**
+ * Salón Tricolor — el pincel.
+ *
+ * Dos láminas dibujadas a mano alzada sobre canvas: un rostro y una mano.
+ * Todo se traza en un espacio virtual de 1000 x 1000 y se escala al final,
+ * así el mismo código sirve para un teléfono y para una pantalla grande.
+ *
+ * Los rostros son caricaturas paramétricas —piel, pelo, gafas, vello— y no
+ * retratos: el objetivo es que se distingan entre sí, no que se parezcan.
+ */
+
+const CANVAS_UNITS = 1000;
+
+/* ------------------------------------------------------------ primitivas - */
+
+function path(ctx, d) {
+  ctx.beginPath();
+  d(ctx);
+  ctx.closePath();
+}
+
+function ellipse(ctx, x, y, rx, ry, rot = 0) {
+  ctx.beginPath();
+  ctx.ellipse(x, y, rx, ry, rot, 0, Math.PI * 2);
+}
+
+function capsule(ctx, x1, y1, x2, y2, w) {
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.lineWidth = w;
+  ctx.beginPath();
+  ctx.moveTo(x1, y1);
+  ctx.lineTo(x2, y2);
+  ctx.stroke();
+}
+
+function soft(ctx, x, y, r, color, strength) {
+  const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+  g.addColorStop(0, alpha(color, strength));
+  g.addColorStop(0.6, alpha(color, strength * 0.45));
+  g.addColorStop(1, alpha(color, 0));
+  ctx.fillStyle = g;
+  ellipse(ctx, x, y, r, r);
+  ctx.fill();
+}
+
+function star(ctx, x, y, r) {
+  ctx.beginPath();
+  for (let i = 0; i < 10; i++) {
+    const rad = i % 2 ? r * 0.42 : r;
+    const a = (Math.PI / 5) * i - Math.PI / 2;
+    const px = x + Math.cos(a) * rad;
+    const py = y + Math.sin(a) * rad;
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.closePath();
+}
+
+/** Tono de piel resultante: la piel del personaje velada por la base. */
+function skinOf(look) {
+  const fig = figureById(look.figura);
+  if (look.base === 0) return fig.piel;
+  // la base matiza, no reemplaza: quien se sienta en la silla sigue siendo quien es
+  return mix(fig.piel, PALETTES.base[look.base].c, 0.3);
+}
+
+/* ---------------------------------------------------------------- rostro - */
+
+const FACE = {
+  chin: 742,
+  eye: { y: 452, dx: 92, rx: 58, ry: 30 },
+  brow: 382,
+  lips: 630,
+  cheek: { y: 545, dx: 128 },
+};
+
+function headPath(ctx) {
+  ctx.beginPath();
+  ctx.moveTo(500, 205);
+  ctx.bezierCurveTo(645, 205, 712, 322, 712, 452);
+  ctx.bezierCurveTo(712, 604, 638, FACE.chin, 500, FACE.chin);
+  ctx.bezierCurveTo(362, FACE.chin, 288, 604, 288, 452);
+  ctx.bezierCurveTo(288, 322, 355, 205, 500, 205);
+  ctx.closePath();
+}
+
+function lipPaths(ctx, part) {
+  ctx.beginPath();
+  if (part === 'arriba') {
+    ctx.moveTo(428, 628);
+    ctx.quadraticCurveTo(456, 597, 500, 616);
+    ctx.quadraticCurveTo(544, 597, 572, 628);
+    ctx.quadraticCurveTo(500, 642, 428, 628);
+  } else {
+    ctx.moveTo(428, 628);
+    ctx.quadraticCurveTo(500, 642, 572, 628);
+    ctx.quadraticCurveTo(500, 700, 428, 628);
+  }
+  ctx.closePath();
+}
+
+function eyeSocket(ctx, cx) {
+  const { y, rx, ry } = FACE.eye;
+  ctx.beginPath();
+  ctx.ellipse(cx, y, rx, ry, 0, 0, Math.PI * 2);
+  ctx.closePath();
+}
+
+function drawBackdrop(ctx, tone) {
+  const g = ctx.createLinearGradient(0, 0, 0, CANVAS_UNITS);
+  g.addColorStop(0, shade(tone, 0.1));
+  g.addColorStop(1, shade(tone, -0.12));
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, CANVAS_UNITS, CANVAS_UNITS);
+  soft(ctx, 500, 380, 460, '#ffffff', 0.22);
+}
+
+function drawTorso(ctx, fig) {
+  const skin = fig._skin;
+  ctx.fillStyle = shade(skin, -0.12);
+  path(ctx, (c) => {
+    c.moveTo(432, 690);
+    c.lineTo(568, 690);
+    c.lineTo(578, 836);
+    c.lineTo(422, 836);
+  });
+  ctx.fill();
+
+  ctx.fillStyle = fig.traje;
+  path(ctx, (c) => {
+    c.moveTo(500, 806);
+    c.bezierCurveTo(700, 812, 852, 886, 880, 1010);
+    c.lineTo(120, 1010);
+    c.bezierCurveTo(148, 886, 300, 812, 500, 806);
+  });
+  ctx.fill();
+
+  // camisa y solapas
+  ctx.fillStyle = '#f4f1ea';
+  path(ctx, (c) => {
+    c.moveTo(500, 812);
+    c.lineTo(592, 856);
+    c.lineTo(560, 1010);
+    c.lineTo(440, 1010);
+    c.lineTo(408, 856);
+  });
+  ctx.fill();
+
+  ctx.fillStyle = shade(fig.traje, 0.08);
+  path(ctx, (c) => { c.moveTo(500, 812); c.lineTo(408, 856); c.lineTo(372, 1010); c.lineTo(470, 1010); });
+  ctx.fill();
+  path(ctx, (c) => { c.moveTo(500, 812); c.lineTo(592, 856); c.lineTo(628, 1010); c.lineTo(530, 1010); });
+  ctx.fill();
+
+  if (fig.corbata) {
+    ctx.fillStyle = fig.corbata;
+    path(ctx, (c) => {
+      c.moveTo(500, 826);
+      c.lineTo(528, 856);
+      c.lineTo(516, 1010);
+      c.lineTo(484, 1010);
+      c.lineTo(472, 856);
+    });
+    ctx.fill();
+  }
+}
+
+function drawHairBack(ctx, fig) {
+  const { cabello, pelo } = fig;
+  if (pelo === 'melena') {
+    ctx.fillStyle = shade(cabello, -0.12);
+    path(ctx, (c) => {
+      c.moveTo(500, 168);
+      c.bezierCurveTo(700, 168, 772, 330, 766, 520);
+      c.bezierCurveTo(762, 690, 790, 800, 780, 880);
+      c.lineTo(640, 880);
+      c.bezierCurveTo(680, 740, 676, 560, 660, 430);
+      c.lineTo(340, 430);
+      c.bezierCurveTo(324, 560, 320, 740, 360, 880);
+      c.lineTo(220, 880);
+      c.bezierCurveTo(210, 800, 238, 690, 234, 520);
+      c.bezierCurveTo(228, 330, 300, 168, 500, 168);
+    });
+    ctx.fill();
+  }
+  if (pelo === 'corto-fem') {
+    ctx.fillStyle = shade(cabello, -0.1);
+    ellipse(ctx, 500, 430, 246, 290);
+    ctx.fill();
+  }
+}
+
+function drawEars(ctx, fig) {
+  ctx.fillStyle = fig._skin;
+  ctx.strokeStyle = shade(fig._skin, -0.25);
+  ctx.lineWidth = 3;
+  for (const x of [288, 712]) {
+    ellipse(ctx, x, 480, 30, 48);
+    ctx.fill();
+    ctx.stroke();
+  }
+  if (fig.aretes) {
+    ctx.fillStyle = '#e3b341';
+    for (const x of [286, 714]) {
+      ellipse(ctx, x, 530, 16, 16);
+      ctx.fill();
+      ellipse(ctx, x, 566, 22, 26);
+      ctx.strokeStyle = '#e3b341';
+      ctx.lineWidth = 7;
+      ctx.stroke();
+    }
+  }
+}
+
+function drawHairFront(ctx, fig) {
+  const { cabello, pelo } = fig;
+  ctx.fillStyle = cabello;
+  if (pelo === 'turbante') {
+    ctx.fillStyle = fig.tocado || cabello;
+    path(ctx, (c) => {
+      c.moveTo(276, 420);
+      c.bezierCurveTo(258, 250, 360, 120, 500, 120);
+      c.bezierCurveTo(648, 120, 748, 250, 726, 420);
+      c.bezierCurveTo(700, 330, 640, 296, 500, 296);
+      c.bezierCurveTo(362, 296, 300, 330, 276, 420);
+    });
+    ctx.fill();
+    ctx.strokeStyle = shade(fig.tocado || cabello, -0.2);
+    ctx.lineWidth = 9;
+    for (const [x1, y1, x2, y2] of [[300, 350, 700, 350], [312, 290, 690, 290], [338, 228, 664, 228]]) {
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.quadraticCurveTo(500, y1 - 74, x2, y2);
+      ctx.stroke();
+    }
+    ctx.fillStyle = shade(fig.tocado || cabello, 0.12);
+    ellipse(ctx, 690, 196, 58, 44, -0.5);
+    ctx.fill();
+    return;
+  }
+
+  if (pelo === 'rizado') {
+    ctx.fillStyle = cabello;
+    const rng = Rng('rizos');
+    for (let i = 0; i <= 26; i++) {
+      const a = Math.PI + (Math.PI * i) / 26;
+      const r = 232 + rng() * 12;
+      ellipse(ctx, 500 + Math.cos(a) * r, 448 + Math.sin(a) * r * 1.05, 44 + rng() * 14, 42 + rng() * 12);
+      ctx.fill();
+    }
+    return;
+  }
+
+  const caps = {
+    ondulado: (c) => {
+      c.moveTo(272, 520);
+      c.bezierCurveTo(256, 300, 360, 166, 500, 166);
+      c.bezierCurveTo(640, 166, 744, 300, 728, 520);
+      c.bezierCurveTo(716, 430, 706, 328, 664, 300);
+      c.bezierCurveTo(604, 344, 548, 320, 500, 292);
+      c.bezierCurveTo(452, 326, 396, 336, 342, 302);
+      c.bezierCurveTo(298, 330, 286, 430, 272, 520);
+    },
+    peinado: (c) => {
+      c.moveTo(276, 500);
+      c.bezierCurveTo(262, 292, 366, 172, 500, 172);
+      c.bezierCurveTo(636, 172, 740, 292, 726, 500);
+      c.bezierCurveTo(716, 404, 702, 300, 604, 286);
+      c.bezierCurveTo(474, 268, 364, 296, 332, 330);
+      c.bezierCurveTo(302, 376, 288, 432, 276, 500);
+    },
+    corto: (c) => {
+      c.moveTo(280, 500);
+      c.bezierCurveTo(268, 300, 370, 178, 500, 178);
+      c.bezierCurveTo(630, 178, 732, 300, 720, 500);
+      c.bezierCurveTo(708, 400, 690, 312, 620, 304);
+      c.bezierCurveTo(540, 294, 440, 294, 376, 306);
+      c.bezierCurveTo(310, 316, 292, 400, 280, 500);
+    },
+    'corto-fem': (c) => {
+      c.moveTo(264, 548);
+      c.bezierCurveTo(250, 286, 360, 158, 500, 158);
+      c.bezierCurveTo(644, 158, 754, 286, 740, 548);
+      c.bezierCurveTo(726, 452, 712, 332, 656, 306);
+      c.bezierCurveTo(566, 352, 426, 342, 348, 288);
+      c.bezierCurveTo(300, 330, 278, 436, 264, 548);
+    },
+    melena: (c) => {
+      c.moveTo(268, 560);
+      c.bezierCurveTo(256, 280, 362, 158, 500, 158);
+      c.bezierCurveTo(640, 158, 748, 280, 734, 560);
+      c.bezierCurveTo(720, 440, 702, 322, 630, 300);
+      c.bezierCurveTo(524, 364, 402, 346, 340, 290);
+      c.bezierCurveTo(300, 340, 282, 444, 268, 560);
+    },
+  };
+  path(ctx, caps[pelo] || caps.corto);
+  ctx.fill();
+}
+
+function drawBrows(ctx, look, fig) {
+  const estilo = optionOf(look, 'cejas');
+  const grosor = { natural: 10, definidas: 15, laminadas: 19 }[estilo] * (0.86 + fig.cejas * 0.06);
+  const color = estilo === 'laminadas' ? shade(fig.cabello, -0.25) : shade(fig.cabello, -0.15);
+  ctx.strokeStyle = color;
+  ctx.lineWidth = grosor;
+  ctx.lineCap = 'round';
+  for (const s of [-1, 1]) {
+    const cx = 500 + s * FACE.eye.dx;
+    ctx.beginPath();
+    if (estilo === 'definidas') {
+      ctx.moveTo(cx - s * 62, FACE.brow + 14);
+      ctx.quadraticCurveTo(cx - s * 6, FACE.brow - 30, cx + s * 54, FACE.brow + 4);
+    } else {
+      ctx.moveTo(cx - s * 60, FACE.brow + 10);
+      ctx.quadraticCurveTo(cx, FACE.brow - 22, cx + s * 56, FACE.brow + 10);
+    }
+    ctx.stroke();
+  }
+  if (estilo === 'laminadas') {
+    // el pelo peinado hacia arriba deja un filo más claro en el borde de arriba
+    ctx.lineWidth = grosor * 0.3;
+    ctx.strokeStyle = alpha(shade(fig.cabello, 0.35), 0.75);
+    for (const s of [-1, 1]) {
+      const cx = 500 + s * FACE.eye.dx;
+      ctx.beginPath();
+      ctx.moveTo(cx - s * 52, FACE.brow + 2);
+      ctx.quadraticCurveTo(cx, FACE.brow - 28, cx + s * 48, FACE.brow + 3);
+      ctx.stroke();
+    }
+  }
+}
+
+function drawShadow(ctx, look) {
+  const color = colorOf(look, 'sombra');
+  const estilo = optionOf(look, 'sombraEstilo');
+  const { y, dx, rx } = FACE.eye;
+  for (const s of [-1, 1]) {
+    const cx = 500 + s * dx;
+    ctx.save();
+    if (estilo === 'suave') {
+      soft(ctx, cx, y - 26, rx * 1.25, color, 0.62);
+    } else if (estilo === 'humo') {
+      soft(ctx, cx, y - 16, rx * 1.7, color, 0.7);
+      soft(ctx, cx + s * 26, y + 26, rx * 0.8, color, 0.4);
+    } else if (estilo === 'gato') {
+      ctx.fillStyle = alpha(color, 0.72);
+      path(ctx, (c) => {
+        c.moveTo(cx - s * rx, y - 8);
+        c.quadraticCurveTo(cx, y - 60, cx + s * rx * 0.9, y - 34);
+        c.quadraticCurveTo(cx + s * (rx + 52), y - 66, cx + s * (rx + 62), y - 22);
+        c.quadraticCurveTo(cx + s * rx, y - 6, cx - s * rx, y - 8);
+      });
+      ctx.fill();
+      soft(ctx, cx, y - 22, rx, color, 0.35);
+    } else {
+      ctx.fillStyle = alpha(color, 0.85);
+      path(ctx, (c) => {
+        c.moveTo(cx - s * rx * 1.05, y - 16);
+        c.quadraticCurveTo(cx, y - 74, cx + s * rx * 1.1, y - 20);
+        c.quadraticCurveTo(cx, y - 34, cx - s * rx * 1.05, y - 16);
+      });
+      ctx.fill();
+      ctx.fillStyle = alpha(shade(color, 0.5), 0.9);
+      ellipse(ctx, cx, y - 14, rx * 0.55, 9);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+}
+
+function drawEyes(ctx, look, fig) {
+  const { y, dx, rx, ry } = FACE.eye;
+  for (const s of [-1, 1]) {
+    const cx = 500 + s * dx;
+    ctx.fillStyle = '#fbf8f3';
+    eyeSocket(ctx, cx);
+    ctx.fill();
+    ctx.save();
+    eyeSocket(ctx, cx);
+    ctx.clip();
+    ctx.fillStyle = fig.ojos || '#4a3524';
+    ellipse(ctx, cx, y + 2, 23, 23);
+    ctx.fill();
+    ctx.fillStyle = '#12100e';
+    ellipse(ctx, cx, y + 2, 10, 10);
+    ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    ellipse(ctx, cx - 8, y - 7, 6, 6);
+    ctx.fill();
+    ctx.restore();
+    ctx.strokeStyle = shade(fig._skin, -0.4);
+    ctx.lineWidth = 3;
+    eyeSocket(ctx, cx);
+    ctx.stroke();
+    // párpado
+    ctx.strokeStyle = alpha(shade(fig._skin, -0.35), 0.5);
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(cx - rx * 0.95, y - ry * 0.5);
+    ctx.quadraticCurveTo(cx, y - ry * 1.7, cx + rx * 0.95, y - ry * 0.5);
+    ctx.stroke();
+  }
+}
+
+function drawLiner(ctx, look) {
+  const estilo = optionOf(look, 'delineador');
+  if (estilo === 'ninguno') return;
+  const { y, dx, rx, ry } = FACE.eye;
+  const grosor = { fino: 6, alado: 9, grafico: 9 }[estilo];
+  ctx.strokeStyle = '#14120f';
+  ctx.lineCap = 'round';
+  ctx.lineWidth = grosor;
+  for (const s of [-1, 1]) {
+    const cx = 500 + s * dx;
+    ctx.beginPath();
+    ctx.moveTo(cx - s * rx, y - 4);
+    ctx.quadraticCurveTo(cx, y - ry - 8, cx + s * rx * 0.98, y - 6);
+    ctx.stroke();
+    if (estilo !== 'fino') {
+      ctx.beginPath();
+      ctx.moveTo(cx + s * rx * 0.9, y - 8);
+      ctx.quadraticCurveTo(cx + s * (rx + 30), y - 22, cx + s * (rx + 54), y - 44);
+      ctx.lineWidth = grosor * 0.8;
+      ctx.stroke();
+    }
+    if (estilo === 'grafico') {
+      ctx.lineWidth = 7;
+      ctx.beginPath();
+      ctx.moveTo(cx - s * rx * 0.6, y - 46);
+      ctx.quadraticCurveTo(cx + s * 16, y - 62, cx + s * (rx + 30), y - 52);
+      ctx.stroke();
+    }
+  }
+}
+
+function drawLashes(ctx, look) {
+  const estilo = optionOf(look, 'pestanas');
+  const { y, dx, rx, ry } = FACE.eye;
+  const largo = { natural: 12, rizadas: 22, dramaticas: 34 }[estilo];
+  const grosor = { natural: 3, rizadas: 5, dramaticas: 7 }[estilo];
+  ctx.strokeStyle = '#141210';
+  ctx.lineWidth = grosor;
+  ctx.lineCap = 'round';
+  for (const s of [-1, 1]) {
+    const cx = 500 + s * dx;
+    for (let i = -2; i <= 2; i++) {
+      const t = i / 2;
+      const px = cx + t * rx * 0.85;
+      const py = y - Math.cos(t * 1.2) * ry * 0.92;
+      ctx.beginPath();
+      ctx.moveTo(px, py);
+      ctx.quadraticCurveTo(px + s * largo * 0.4, py - largo * 0.7, px + s * largo * 0.85, py - largo);
+      ctx.stroke();
+    }
+    if (estilo === 'dramaticas') {
+      ctx.lineWidth = 3;
+      for (let i = -1; i <= 1; i++) {
+        const px = cx + i * rx * 0.5;
+        ctx.beginPath();
+        ctx.moveTo(px, y + ry * 0.85);
+        ctx.lineTo(px + i * 4, y + ry * 0.85 + 14);
+        ctx.stroke();
+      }
+    }
+  }
+}
+
+function drawNose(ctx, fig) {
+  ctx.strokeStyle = shade(fig._skin, -0.28);
+  ctx.lineWidth = 6;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(500, 470);
+  ctx.lineTo(486, 548);
+  ctx.quadraticCurveTo(500, 566, 522, 550);
+  ctx.stroke();
+  ctx.fillStyle = alpha(shade(fig._skin, -0.35), 0.55);
+  ellipse(ctx, 470, 556, 9, 6);
+  ctx.fill();
+  ellipse(ctx, 534, 556, 9, 6);
+  ctx.fill();
+}
+
+function drawLips(ctx, look) {
+  const color = colorOf(look, 'labial');
+  const acabado = optionOf(look, 'labialAcabado');
+  for (const part of ['arriba', 'abajo']) {
+    lipPaths(ctx, part);
+    if (acabado === 'metalico') {
+      const g = ctx.createLinearGradient(430, 600, 570, 690);
+      g.addColorStop(0, shade(color, 0.45));
+      g.addColorStop(0.45, color);
+      g.addColorStop(1, shade(color, -0.3));
+      ctx.fillStyle = g;
+    } else {
+      ctx.fillStyle = part === 'arriba' ? shade(color, -0.12) : color;
+    }
+    ctx.fill();
+  }
+  ctx.strokeStyle = alpha(shade(color, -0.45), 0.8);
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(428, 628);
+  ctx.quadraticCurveTo(500, 642, 572, 628);
+  ctx.stroke();
+  if (acabado === 'gloss') {
+    ctx.fillStyle = 'rgba(255,255,255,0.45)';
+    ellipse(ctx, 500, 650, 30, 9);
+    ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.35)';
+    ellipse(ctx, 474, 618, 16, 6, -0.3);
+    ctx.fill();
+  }
+}
+
+function drawFacialHair(ctx, fig) {
+  if (!fig.vello || fig.vello === 'ninguno') return;
+  const color = alpha(shade(fig.cabello, -0.2), 0.85);
+  ctx.fillStyle = color;
+  if (fig.vello === 'barba') {
+    ctx.save();
+    headPath(ctx);
+    ctx.clip();
+    path(ctx, (c) => {
+      c.moveTo(318, 500);
+      c.bezierCurveTo(330, 700, 400, 770, 500, 770);
+      c.bezierCurveTo(600, 770, 670, 700, 682, 500);
+      c.bezierCurveTo(660, 620, 600, 660, 500, 660);
+      c.bezierCurveTo(400, 660, 340, 620, 318, 500);
+    });
+    ctx.fill();
+    ctx.restore();
+  }
+  ctx.fillStyle = color;
+  path(ctx, (c) => {
+    c.moveTo(444, 592);
+    c.quadraticCurveTo(500, 572, 556, 592);
+    c.quadraticCurveTo(500, 606, 444, 592);
+  });
+  ctx.fill();
+}
+
+function drawGlasses(ctx, fig) {
+  if (!fig.gafas || fig.gafas === 'ninguno') return;
+  ctx.strokeStyle = '#2a2622';
+  ctx.lineWidth = 8;
+  ctx.lineJoin = 'round';
+  const { y, dx } = FACE.eye;
+  for (const s of [-1, 1]) {
+    const cx = 500 + s * dx;
+    ctx.beginPath();
+    if (fig.gafas === 'redondo') ctx.ellipse(cx, y, 74, 66, 0, 0, Math.PI * 2);
+    else ctx.roundRect(cx - 78, y - 52, 156, 100, 18);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(cx + s * 78, y - 16);
+    ctx.lineTo(cx + s * 140, y - 30);
+    ctx.stroke();
+  }
+  ctx.beginPath();
+  ctx.moveTo(500 - dx + 76, y - 6);
+  ctx.quadraticCurveTo(500, y - 22, 500 + dx - 76, y - 6);
+  ctx.stroke();
+}
+
+function drawExtras(ctx, look, fig) {
+  // los extras brillan en el tono de la sombra: así el rostro sigue leyéndose
+  // como una sola idea y no como tres maquillajes distintos a la vez
+  const brillo = colorOf(look, 'sombra');
+  if (hasExtra(look, 'antifaz')) {
+    ctx.save();
+    headPath(ctx);
+    ctx.clip();
+    ctx.fillStyle = alpha(brillo, 0.45);
+    path(ctx, (c) => {
+      c.moveTo(300, 420);
+      c.quadraticCurveTo(500, 356, 700, 420);
+      c.quadraticCurveTo(700, 520, 592, 516);
+      c.quadraticCurveTo(500, 470, 408, 516);
+      c.quadraticCurveTo(300, 520, 300, 420);
+    });
+    ctx.fill();
+    ctx.restore();
+  }
+  if (hasExtra(look, 'pecas')) {
+    const rng = Rng('pecas');
+    ctx.fillStyle = alpha(mix(fig._skin, '#6b3f22', 0.62), 0.5);
+    for (let i = 0; i < 30; i++) {
+      const lado = i % 2 ? 1 : -1;
+      const x = 500 + lado * (46 + rng() * 148);
+      const y = 486 + rng() * 82;
+      ellipse(ctx, x, y, 2.6 + rng() * 2, 2.4 + rng() * 1.6);
+      ctx.fill();
+    }
+    for (let i = 0; i < 6; i++) {           // unas pocas cruzando el puente
+      ellipse(ctx, 470 + rng() * 60, 470 + rng() * 30, 2.4 + rng() * 1.4, 2.2 + rng());
+      ctx.fill();
+    }
+  }
+  if (hasExtra(look, 'purpurina')) {
+    const rng = Rng('purpurina');
+    for (let i = 0; i < 34; i++) {
+      const a = rng() * Math.PI * 2;
+      const r = 60 + rng() * 180;
+      const x = 500 + Math.cos(a) * r;
+      const y = 470 + Math.sin(a) * r * 0.72;
+      ctx.fillStyle = alpha(rng() > 0.5 ? brillo : '#ffffff', 0.55 + rng() * 0.4);
+      star(ctx, x, y, 5 + rng() * 7);
+      ctx.fill();
+    }
+  }
+  if (hasExtra(look, 'pedreria')) {
+    for (const s of [-1, 1]) {
+      const cx = 500 + s * (FACE.eye.dx + FACE.eye.rx + 12);
+      for (let i = 0; i < 4; i++) {
+        const x = cx + s * i * 14;
+        const y = FACE.eye.y - 20 - i * 16;
+        ctx.fillStyle = brillo;
+        ellipse(ctx, x, y, 10 - i, 10 - i);
+        ctx.fill();
+        ctx.fillStyle = 'rgba(255,255,255,0.85)';
+        ellipse(ctx, x - 2.5, y - 2.5, 3.2, 3.2);
+        ctx.fill();
+      }
+    }
+  }
+  if (hasExtra(look, 'lunar')) {
+    ctx.fillStyle = '#3a2418';
+    ellipse(ctx, 578, 588, 9, 8);
+    ctx.fill();
+  }
+}
+
+/** Dibuja la lámina del rostro completa. */
+function paintFace(ctx, look, tone = '#efe3e0') {
+  const fig = { ...figureById(look.figura), _skin: skinOf(look) };
+  ctx.save();
+  drawBackdrop(ctx, tone);
+  drawHairBack(ctx, fig);
+  drawTorso(ctx, fig);
+  drawEars(ctx, fig);
+
+  // cabeza
+  ctx.save();
+  headPath(ctx);
+  ctx.fillStyle = fig._skin;
+  ctx.fill();
+  ctx.clip();
+
+  if (look.contorno > 0) {
+    const k = look.contorno / 3;
+    const sombra = shade(fig._skin, -0.55);
+    for (const s of [-1, 1]) {
+      soft(ctx, 500 + s * 216, 496, 112 + k * 34, sombra, 0.16 + k * 0.24);
+      soft(ctx, 500 + s * 152, 600, 72 + k * 24, sombra, 0.1 + k * 0.2);
+    }
+    soft(ctx, 500, 252, 150 + k * 40, sombra, 0.1 + k * 0.12);
+    soft(ctx, 500, 724, 118 + k * 26, sombra, 0.08 + k * 0.16);
+  }
+  if (look.brillo > 0) {
+    const k = look.brillo / 3;
+    for (const [x, y, r] of [[398, 512, 70], [602, 512, 70], [500, 400, 54], [500, 706, 46]]) {
+      soft(ctx, x, y, r * (0.8 + k * 0.5), '#fff6e8', 0.2 + k * 0.45);
+    }
+  }
+  if (look.ruborInt > 0) {
+    const k = look.ruborInt / 3;
+    for (const s of [-1, 1]) {
+      soft(ctx, 500 + s * FACE.cheek.dx, FACE.cheek.y, 96 + k * 26, colorOf(look, 'rubor'), 0.22 + k * 0.42);
+    }
+  }
+  ctx.restore();
+
+  drawShadow(ctx, look);
+  drawEyes(ctx, look, fig);
+  drawLiner(ctx, look);
+  drawLashes(ctx, look);
+  drawBrows(ctx, look, fig);
+  drawNose(ctx, fig);
+  drawFacialHair(ctx, fig);
+  drawLips(ctx, look);
+  drawHairFront(ctx, fig);
+  drawGlasses(ctx, fig);
+  drawExtras(ctx, look, fig);
+  ctx.restore();
+}
+
+/** Qué herramienta corresponde al punto tocado del rostro (espacio 1000). */
+function faceHit(x, y) {
+  const { eye, cheek, brow } = FACE;
+  if (y > 560 && y < 700 && Math.abs(x - 500) < 110) return 'labial';
+  if (y > brow - 46 && y < brow + 28 && Math.abs(x - 500) > 20 && Math.abs(x - 500) < 180) return 'cejas';
+  if (y > brow + 28 && y < eye.y + 46 && Math.abs(x - 500) < 200) return 'sombra';
+  if (y > cheek.y - 80 && y < cheek.y + 80 && Math.abs(x - 500) > 60 && Math.abs(x - 500) < 220) return 'rubor';
+  if (y > 120 && y < 760) return 'base';
+  return null;
+}
+
+/* ----------------------------------------------------------------- manos - */
+
+/* Los cinco dedos: base, punta y grosor. El pulgar sale en diagonal, como
+   en cualquier mano que se apoya en la mesa de manicura. */
+const FINGERS = [
+  { x1: 372, y1: 768, x2: 356, y2: 404, w: 104 },
+  { x1: 490, y1: 752, x2: 486, y2: 352, w: 108 },
+  { x1: 606, y1: 758, x2: 618, y2: 398, w: 104 },
+  { x1: 708, y1: 790, x2: 734, y2: 492, w: 90 },
+  { x1: 368, y1: 876, x2: 216, y2: 700, w: 112 },
+];
+
+const SHAPES = {
+  redonda: { tip: 0.84, len: 0.78, bow: 0.03, round: 1.0 },
+  ovalada: { tip: 0.64, len: 1.0, bow: 0.05, round: 1.05 },
+  almendra: { tip: 0.34, len: 1.28, bow: 0.06, round: 0.95 },
+  cuadrada: { tip: 0.96, len: 0.86, bow: 0.0, round: 0.12 },
+  coffin: { tip: 0.5, len: 1.22, bow: 0.0, round: 0.08 },
+  stiletto: { tip: 0.1, len: 1.55, bow: 0.02, round: 0.45 },
+};
+
+function nailPath(ctx, w, h, forma) {
+  const p = SHAPES[forma] || SHAPES.ovalada;
+  const H = h * p.len;
+  const tw = w * p.tip;
+  ctx.beginPath();
+  ctx.moveTo(-w / 2, 0);
+  ctx.bezierCurveTo(-w / 2 - p.bow * w, -H * 0.42, -tw / 2, -H * 0.72, -tw / 2, -H);
+  ctx.quadraticCurveTo(0, -H - p.round * w * 0.42, tw / 2, -H);
+  ctx.bezierCurveTo(tw / 2, -H * 0.72, w / 2 + p.bow * w, -H * 0.42, w / 2, 0);
+  ctx.quadraticCurveTo(0, w * 0.18, -w / 2, 0);
+  ctx.closePath();
+  return H;
+}
+
+function nailArt(ctx, look, w, H, base, tinta) {
+  const arte = optionOf(look, 'arte');
+  if (arte === 'ninguno') return;
+  ctx.save();
+  if (arte === 'frances') {
+    ctx.fillStyle = tinta;
+    ctx.beginPath();
+    ctx.moveTo(-w, -H * 0.56);
+    ctx.quadraticCurveTo(0, -H * 0.34, w, -H * 0.56);
+    ctx.lineTo(w, -H * 2);
+    ctx.lineTo(-w, -H * 2);
+    ctx.closePath();
+    ctx.fill();
+  } else if (arte === 'puntos') {
+    ctx.fillStyle = tinta;
+    for (let r = 0; r < 4; r++) {
+      for (let c = -1; c <= 1; c++) {
+        const y = -H * (0.2 + r * 0.22);
+        const x = c * w * 0.26 + (r % 2 ? w * 0.13 : 0);
+        ellipse(ctx, x, y, w * 0.08, w * 0.08);
+        ctx.fill();
+      }
+    }
+  } else if (arte === 'rayas') {
+    ctx.strokeStyle = tinta;
+    ctx.lineWidth = w * 0.1;
+    ctx.lineCap = 'round';
+    for (let i = -1; i <= 2; i++) {
+      ctx.beginPath();
+      ctx.moveTo(-w * 0.5, -H * (0.15 + i * 0.26));
+      ctx.lineTo(w * 0.5, -H * (0.38 + i * 0.26));
+      ctx.stroke();
+    }
+  } else if (arte === 'estrellas') {
+    ctx.fillStyle = tinta;
+    for (const [x, y, r] of [[-0.16, 0.3, 0.17], [0.18, 0.56, 0.13], [-0.05, 0.8, 0.1]]) {
+      star(ctx, x * w, -y * H, r * w);
+      ctx.fill();
+    }
+  } else if (arte === 'flores') {
+    for (const [x, y, r] of [[-0.14, 0.34, 0.15], [0.16, 0.66, 0.12]]) {
+      ctx.fillStyle = tinta;
+      for (let i = 0; i < 5; i++) {
+        const a = (Math.PI * 2 * i) / 5;
+        ellipse(ctx, x * w + Math.cos(a) * r * w, -y * H + Math.sin(a) * r * w, r * w * 0.62, r * w * 0.62);
+        ctx.fill();
+      }
+      ctx.fillStyle = shade(base, -0.35);
+      ellipse(ctx, x * w, -y * H, r * w * 0.5, r * w * 0.5);
+      ctx.fill();
+    }
+  } else if (arte === 'degradado') {
+    const g = ctx.createLinearGradient(0, 0, 0, -H);
+    g.addColorStop(0, alpha(base, 0));
+    g.addColorStop(1, tinta);
+    ctx.fillStyle = g;
+    ctx.fillRect(-w, -H * 1.4, w * 2, H * 1.4);
+  } else if (arte === 'tricolor') {
+    // amarillo la mitad de arriba, azul y rojo un cuarto cada uno
+    const bandas = [['#f5c518', 1.6, 1.1], ['#1b6fb5', 0.5, 0.25], ['#d4212a', 0.25, 0.25]];
+    for (const [c, top, alto] of bandas) {
+      ctx.fillStyle = c;
+      ctx.fillRect(-w, -H * top, w * 2, H * alto);
+    }
+  }
+  ctx.restore();
+}
+
+function drawNail(ctx, look, x, y, ang, w, acento) {
+  const forma = optionOf(look, 'forma');
+  const acabado = optionOf(look, 'acabado');
+  const esmalte = colorOf(look, 'esmalte');
+  const tintaArte = colorOf(look, 'arteColor');
+  const base = acento ? tintaArte : esmalte;
+  const tinta = acento ? esmalte : tintaArte;
+  const nw = w * 0.74;
+  const nh = w * (0.62 + look.largo * 0.26);
+
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(ang);
+
+  ctx.save();
+  ctx.shadowColor = 'rgba(40, 20, 30, 0.35)';
+  ctx.shadowBlur = 12;
+  ctx.shadowOffsetY = 4;
+  const H = nailPath(ctx, nw, nh, forma);
+  ctx.fillStyle = base;
+  ctx.fill();
+  ctx.restore();
+
+  const H2 = nailPath(ctx, nw, nh, forma);
+  ctx.save();
+  ctx.clip();
+  nailArt(ctx, look, nw, H2, base, tinta);
+
+  if (acabado === 'cromado') {
+    const g = ctx.createLinearGradient(-nw / 2, 0, nw / 2, -H2);
+    g.addColorStop(0, 'rgba(255,255,255,0.55)');
+    g.addColorStop(0.35, 'rgba(255,255,255,0.05)');
+    g.addColorStop(0.6, 'rgba(255,255,255,0.6)');
+    g.addColorStop(1, 'rgba(0,0,0,0.28)');
+    ctx.fillStyle = g;
+    ctx.fillRect(-nw, -H2 * 1.6, nw * 2, H2 * 1.8);
+  } else if (acabado === 'mate') {
+    ctx.fillStyle = 'rgba(245, 240, 236, 0.14)';
+    ctx.fillRect(-nw, -H2 * 1.6, nw * 2, H2 * 1.8);
+  } else {
+    ctx.fillStyle = 'rgba(255,255,255,0.42)';
+    ellipse(ctx, -nw * 0.2, -H2 * 0.66, nw * 0.16, H2 * 0.2, 0.3);
+    ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.2)';
+    ellipse(ctx, nw * 0.22, -H2 * 0.4, nw * 0.1, H2 * 0.14, -0.2);
+    ctx.fill();
+  }
+  ctx.restore();
+
+  nailPath(ctx, nw, nh, forma);
+  ctx.strokeStyle = alpha(shade(base, -0.45), 0.55);
+  ctx.lineWidth = 2.5;
+  ctx.stroke();
+  ctx.restore();
+}
+
+/** Dibuja la lámina de la mano con las cinco uñas. */
+function paintHand(ctx, look, tone = '#efe3e0') {
+  const fig = figureById(look.figura);
+  const skin = skinOf(look);
+  ctx.save();
+  drawBackdrop(ctx, tone);
+
+  // la toalla del puesto de manicura
+  ctx.fillStyle = alpha('#ffffff', 0.3);
+  ctx.beginPath();
+  ctx.roundRect(60, 690, 880, 310, 46);
+  ctx.fill();
+
+  // La mano se dibuja dos veces: primero el contorno, en un tono más oscuro y
+  // más gordo, y encima la piel. Así queda una línea limpia alrededor de todo
+  // y entre los dedos, sin tener que unir las siluetas a mano.
+  const cuerpo = (crece, color) => {
+    ctx.fillStyle = color;
+    ctx.strokeStyle = color;
+    ctx.beginPath();
+    ctx.roundRect(290 - crece, 640 - crece, 496 + crece * 2, 330 + crece * 2, 150);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.roundRect(392 - crece, 870 - crece, 296 + crece * 2, 170 + crece * 2, 64);
+    ctx.fill();
+    for (const f of FINGERS) capsule(ctx, f.x1, f.y1, f.x2, f.y2, f.w + crece * 2);
+  };
+
+  ctx.save();
+  ctx.shadowColor = 'rgba(60, 30, 40, 0.26)';
+  ctx.shadowBlur = 26;
+  ctx.shadowOffsetY = 12;
+  cuerpo(7, shade(skin, -0.3));
+  ctx.restore();
+  cuerpo(0, skin);
+
+  // el hueco de la palma, nada más
+  ctx.fillStyle = alpha(shade(skin, -0.35), 0.13);
+  ellipse(ctx, 532, 806, 152, 72, -0.08);
+  ctx.fill();
+
+  // manga
+  ctx.fillStyle = fig.traje;
+  ctx.beginPath();
+  ctx.roundRect(370, 962, 340, 92, 34);
+  ctx.fill();
+
+  for (let i = 0; i < FINGERS.length; i++) {
+    const f = FINGERS[i];
+    const ang = Math.atan2(f.y2 - f.y1, f.x2 - f.x1) + Math.PI / 2;
+    drawNail(ctx, look, f.x2, f.y2, ang, f.w, look.acento === i + 1);
+  }
+  ctx.restore();
+}
+
+/** Índice de uña (0..4) bajo el punto, o -1. Espacio 1000. */
+function nailHit(x, y) {
+  let best = -1;
+  let bestD = 96;
+  for (let i = 0; i < FINGERS.length; i++) {
+    const f = FINGERS[i];
+    const d = Math.hypot(x - f.x2, y - f.y2);
+    if (d < bestD) { bestD = d; best = i; }
+  }
+  return best;
+}
+
+
+/**
+ * Salón Tricolor — la mesa de trabajo.
+ *
+ * Aquí no hay reglas de belleza: sólo se arman los controles a partir de las
+ * paletas del engine, se empuja cada cambio a un historial y se vuelven a
+ * pintar las dos láminas. Todo lo que se puede comprobar sin navegador vive
+ * en engine.js; esto es cableado.
+ */
+
+const $ = (id) => document.getElementById(id);
+
+const TICKS = {
+  contorno: ['sin', 'leve', 'medio', 'escultura'],
+  brillo: ['sin', 'rocío', 'glow', 'faro'],
+  ruborInt: ['sin', 'apenas', 'medio', 'carnaval'],
+  largo: ['al ras', 'corta', 'media', 'garra'],
+};
+
+const DEDOS = ['Ninguna', 'Índice', 'Medio', 'Anular', 'Meñique', 'Pulgar'];
+
+/** El rail entero se declara aquí y se dibuja solo. */
+const PANELS = [
+  {
+    id: 'rostro',
+    groups: [
+      { n: 'Piel', fields: [
+        { k: 'base', t: 'palette', n: 'Tono de base' },
+        { k: 'contorno', t: 'range', n: 'Contorno' },
+        { k: 'brillo', t: 'range', n: 'Iluminador' },
+      ] },
+      { n: 'Mejillas', fields: [
+        { k: 'rubor', t: 'palette', n: 'Rubor' },
+        { k: 'ruborInt', t: 'range', n: 'Intensidad' },
+      ] },
+      { n: 'Ojos', fields: [
+        { k: 'sombra', t: 'palette', n: 'Sombra' },
+        { k: 'sombraEstilo', t: 'seg', n: 'Aplicación' },
+        { k: 'delineador', t: 'seg', n: 'Delineador' },
+        { k: 'pestanas', t: 'seg', n: 'Pestañas' },
+        { k: 'cejas', t: 'seg', n: 'Cejas' },
+      ] },
+      { n: 'Labios', fields: [
+        { k: 'labial', t: 'palette', n: 'Labial' },
+        { k: 'labialAcabado', t: 'seg', n: 'Acabado' },
+      ] },
+      { n: 'Detalles', fields: [{ k: 'extras', t: 'extras', n: 'Extras', nota: 'La purpurina, la pedrería y el antifaz brillan en el tono de la sombra.' }] },
+    ],
+  },
+  {
+    id: 'unas',
+    groups: [
+      { n: 'Forma', fields: [
+        { k: 'forma', t: 'seg', n: 'Corte' },
+        { k: 'largo', t: 'range', n: 'Largo' },
+      ] },
+      { n: 'Esmalte', fields: [
+        { k: 'esmalte', t: 'palette', n: 'Color' },
+        { k: 'acabado', t: 'seg', n: 'Acabado' },
+      ] },
+      { n: 'Decoración', fields: [
+        { k: 'arte', t: 'seg', n: 'Diseño' },
+        { k: 'arteColor', t: 'palette', n: 'Color del diseño' },
+        { k: 'acento', t: 'acento', n: 'Uña acentuada' },
+      ] },
+    ],
+  },
+];
+
+/** Qué panel abrir cuando alguien toca una zona del rostro. */
+const PANEL_DE = { base: 'rostro', rubor: 'rostro', sombra: 'rostro', cejas: 'rostro', labial: 'rostro' };
+
+let look = defaultLook();
+let past = [];
+let future = [];
+let panel = 'rostro';
+const syncers = [];
+
+/* ------------------------------------------------------------ historial - */
+
+function commit(next) {
+  if (next === look) return;
+  past.push(look);
+  if (past.length > 120) past.shift();
+  future.length = 0;
+  look = next;
+  render();
+}
+
+function undo() {
+  if (!past.length) return;
+  future.push(look);
+  look = past.pop();
+  render();
+}
+
+function redo() {
+  if (!future.length) return;
+  past.push(look);
+  look = future.pop();
+  render();
+}
+
+const set = (k, v) => commit(apply(look, k, v));
+
+/* ------------------------------------------------------------- controles - */
+
+function el(tag, cls, text) {
+  const n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (text != null) n.textContent = text;
+  return n;
+}
+
+function buildFigures() {
+  const host = $('figuras');
+  for (const fig of FIGURES) {
+    const b = el('button');
+    b.type = 'button';
+    const dot = el('i');
+    dot.style.background = fig.campana[0];
+    const box = el('span');
+    box.append(fig.nombre, el('small', null, fig.cargo));
+    b.append(dot, box);
+    b.addEventListener('click', () => commit(apply(look, 'figura', fig.id)));
+    host.append(b);
+    syncers.push(() => b.setAttribute('aria-pressed', String(look.figura === fig.id)));
+  }
+}
+
+function buildPalette(field, host) {
+  const wrap = el('div', 'field');
+  wrap.append(el('label', null, field.n));
+  const grid = el('div', 'swatches');
+  const pal = PALETTES[FIELDS[field.k].pal];
+  pal.forEach((tono, i) => {
+    const b = el('button', 'swatch');
+    b.type = 'button';
+    b.title = tono.n;
+    b.setAttribute('aria-label', tono.n);
+    if (tono.c.length > 7) b.classList.add('none');
+    else b.style.background = tono.c;
+    b.addEventListener('click', () => set(field.k, i));
+    grid.append(b);
+    syncers.push(() => b.setAttribute('aria-pressed', String(look[field.k] === i)));
+  });
+  wrap.append(grid);
+  host.append(wrap);
+}
+
+function buildRange(field, host) {
+  const wrap = el('div', 'field');
+  const head = el('div', 'slider-head');
+  const value = el('b');
+  head.append(el('label', null, field.n), value);
+  const input = el('input');
+  input.type = 'range';
+  input.min = '0';
+  input.max = String(FIELDS[field.k].max);
+  input.step = '1';
+  input.addEventListener('input', () => set(field.k, Number(input.value)));
+  wrap.append(head, input);
+  host.append(wrap);
+  syncers.push(() => {
+    input.value = String(look[field.k]);
+    value.textContent = (TICKS[field.k] || [])[look[field.k]] ?? look[field.k];
+  });
+}
+
+function buildSegmented(field, host) {
+  const wrap = el('div', 'field');
+  wrap.append(el('label', null, field.n));
+  const seg = el('div', 'segmented');
+  seg.setAttribute('role', 'group');
+  seg.setAttribute('aria-label', field.n);
+  OPTIONS[FIELDS[field.k].opt].forEach((opt, i) => {
+    const b = el('button', null, opt.n);
+    b.type = 'button';
+    b.addEventListener('click', () => set(field.k, i));
+    seg.append(b);
+    syncers.push(() => b.setAttribute('aria-pressed', String(look[field.k] === i)));
+  });
+  wrap.append(seg);
+  host.append(wrap);
+}
+
+function buildExtras(field, host) {
+  const wrap = el('div', 'field');
+  wrap.append(el('label', null, field.n));
+  const chips = el('div', 'chips');
+  for (const extra of EXTRAS) {
+    const b = el('button', null, extra.n);
+    b.type = 'button';
+    b.addEventListener('click', () => commit(toggleExtra(look, extra.id)));
+    chips.append(b);
+    syncers.push(() => b.setAttribute('aria-pressed', String(hasExtra(look, extra.id))));
+  }
+  wrap.append(chips);
+  if (field.nota) wrap.append(el('p', 'note', field.nota));
+  host.append(wrap);
+}
+
+function buildAcento(field, host) {
+  const wrap = el('div', 'field');
+  wrap.append(el('label', null, field.n));
+  const chips = el('div', 'chips');
+  DEDOS.forEach((nombre, i) => {
+    const b = el('button', null, nombre);
+    b.type = 'button';
+    b.addEventListener('click', () => set('acento', i));
+    chips.append(b);
+    syncers.push(() => b.setAttribute('aria-pressed', String(look.acento === i)));
+  });
+  wrap.append(chips);
+  host.append(wrap);
+}
+
+const BUILDERS = { palette: buildPalette, range: buildRange, seg: buildSegmented, extras: buildExtras, acento: buildAcento };
+
+function buildPanels() {
+  const host = $('panels');
+  for (const p of PANELS) {
+    const box = el('div');
+    box.dataset.panel = p.id;
+    for (const group of p.groups) {
+      const section = el('section', 'group');
+      section.append(el('h2', null, group.n));
+      for (const field of group.fields) BUILDERS[field.t](field, section);
+      box.append(section);
+    }
+    host.append(box);
+    syncers.push(() => { box.hidden = panel !== p.id; });
+  }
+  for (const b of document.querySelectorAll('.panels button')) {
+    b.addEventListener('click', () => {
+      panel = b.dataset.panel;
+      sync();
+    });
+    syncers.push(() => b.setAttribute('aria-pressed', String(panel === b.dataset.panel)));
+  }
+}
+
+/* ---------------------------------------------------------------- lienzo - */
+
+function stage(id, paint) {
+  const canvas = $(id);
+  const ctx = canvas.getContext('2d');
+  let size = 0;
+
+  const resize = () => {
+    const box = canvas.getBoundingClientRect();
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const next = Math.max(1, Math.round(box.width * dpr));
+    if (next === size) return false;
+    size = next;
+    canvas.width = size;
+    canvas.height = size;
+    return true;
+  };
+
+  const draw = () => {
+    if (!size) resize();
+    const k = size / CANVAS_UNITS;
+    ctx.setTransform(k, 0, 0, k, 0, 0);
+    ctx.clearRect(0, 0, CANVAS_UNITS, CANVAS_UNITS);
+    const tone = getComputedStyle(document.body).getPropertyValue('--plate').trim() || '#f6e7e3';
+    paint(ctx, look, tone);
+  };
+
+  const at = (event) => {
+    const box = canvas.getBoundingClientRect();
+    return [
+      ((event.clientX - box.left) / box.width) * CANVAS_UNITS,
+      ((event.clientY - box.top) / box.height) * CANVAS_UNITS,
+    ];
+  };
+
+  if (typeof ResizeObserver === 'function') {
+    new ResizeObserver(() => { if (resize()) draw(); }).observe(canvas);
+  } else {
+    window.addEventListener('resize', () => { if (resize()) draw(); });
+  }
+
+  return { canvas, draw, at };
+}
+
+const rostro = stage('rostro', paintFace);
+const manos = stage('manos', paintHand);
+
+rostro.canvas.addEventListener('click', (e) => {
+  const zona = faceHit(...rostro.at(e));
+  if (!zona) return;
+  panel = PANEL_DE[zona] || panel;
+  sync();
+  const label = [...document.querySelectorAll('#panels label')]
+    .find((l) => l.textContent === { base: 'Tono de base', rubor: 'Rubor', sombra: 'Sombra', cejas: 'Cejas', labial: 'Labial' }[zona]);
+  if (label) label.parentElement.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+});
+
+manos.canvas.addEventListener('click', (e) => {
+  const i = nailHit(...manos.at(e));
+  if (i < 0) return;
+  set('acento', look.acento === i + 1 ? 0 : i + 1);
+});
+
+/* ---------------------------------------------------------------- pintar - */
+
+function sync() {
+  for (const fn of syncers) fn();
+}
+
+function render() {
+  sync();
+  rostro.draw();
+  manos.draw();
+
+  const fig = figureById(look.figura);
+  $('chip-figura').textContent = fig.nombre;
+  $('chip-unas').textContent = `${OPTIONS.forma[look.forma].n} · ${TICKS.largo[look.largo]}`;
+
+  const v = judge(look);
+  $('chip-nota').textContent = `${v.nota}/100`;
+  for (const key of ['armonia', 'atrevimiento', 'coherencia', 'produccion']) {
+    $(`m-${key}`).textContent = `${v[key]}%`;
+    $(`b-${key}`).style.width = `${v[key]}%`;
+  }
+  $('veredicto').textContent = v.veredicto;
+
+  const code = encodeLook(look);
+  if (document.activeElement !== $('codigo')) $('codigo').value = code;
+  $('deshacer').disabled = past.length === 0;
+  $('rehacer').disabled = future.length === 0;
+  try { history.replaceState(null, '', `#${code}`); } catch { /* iframe sin permiso: da igual */ }
+}
+
+/* ---------------------------------------------------------------- turnos - */
+
+$('azar').addEventListener('click', () => {
+  commit(randomLook(`${Date.now()}-${Math.random()}`, look.figura));
+});
+
+$('limpiar').addEventListener('click', () => {
+  const limpio = { ...defaultLook(look.figura), base: 0, contorno: 0, brillo: 0, ruborInt: 0, sombraEstilo: 0, delineador: 0, pestanas: 0, cejas: 0, labial: 0, labialAcabado: 0, extras: 0, esmalte: 0, arte: 0, acento: 0, largo: 1 };
+  commit(limpio);
+});
+
+$('deshacer').addEventListener('click', undo);
+$('rehacer').addEventListener('click', redo);
+
+$('cargar').addEventListener('click', () => {
+  const nota = $('codigo-nota');
+  const leido = decodeLook($('codigo').value);
+  if (!leido) {
+    nota.textContent = 'Ese código no se entiende. Debe empezar por SLN1-.';
+    nota.classList.add('error');
+    return;
+  }
+  nota.textContent = 'Look cargado.';
+  nota.classList.remove('error');
+  commit(leido);
+});
+
+$('codigo').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') $('cargar').click();
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'INPUT' || e.metaKey || e.ctrlKey) return;
+  const k = e.key.toLowerCase();
+  if (k === 'a') $('azar').click();
+  else if (k === 'z') undo();
+  else if (k === 'y') redo();
+});
+
+/* ------------------------------------------------------------- apertura - */
+
+buildFigures();
+buildPanels();
+
+const inicial = decodeLook(location.hash.slice(1));
+if (inicial) look = inicial;
+render();
+window.addEventListener('load', render);
+
+})();
+</script>

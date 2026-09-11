@@ -1,0 +1,102 @@
+<title>Salón Tricolor</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Spectral:ital,wght@0,300;0,600;1,400&display=swap">
+<style>
+/*__STYLE__*/
+</style>
+
+<div class="shell">
+  <header class="masthead">
+    <div class="mark">
+      <h1>Salón Tricolor</h1>
+      <p>Maquillaje y manicura para la clase política colombiana. Nueve caricaturas, cinco uñas y un jurado que no perdona.</p>
+    </div>
+    <dl class="specimen">
+      <div><dt>En la silla</dt><dd id="chip-figura">—</dd></div>
+      <div><dt>Uñas</dt><dd id="chip-unas">—</dd></div>
+      <div><dt>Nota</dt><dd id="chip-nota">—</dd></div>
+    </dl>
+  </header>
+
+  <div class="work">
+    <div class="lienzos">
+      <section class="group elenco">
+        <h2>En la silla</h2>
+        <div class="figuras" id="figuras"></div>
+      </section>
+
+      <section class="plates">
+        <figure class="plate">
+          <div class="frame"><canvas id="rostro"></canvas></div>
+          <figcaption>Fig. 1 — Rostro</figcaption>
+        </figure>
+        <figure class="plate">
+          <div class="frame"><canvas id="manos"></canvas></div>
+          <figcaption>Fig. 2 — Manos</figcaption>
+        </figure>
+        <p class="hint">Toque los labios, los ojos o las mejillas para saltar a esa herramienta · toque una uña para acentuarla · <kbd>A</kbd> azar · <kbd>Z</kbd> deshacer · <kbd>Y</kbd> rehacer</p>
+      </section>
+
+      <section class="jurado">
+        <h2>El jurado</h2>
+        <div class="medidores">
+          <div class="meter">
+            <div class="meter-head"><span>Armonía</span><b id="m-armonia">—</b></div>
+            <div class="track"><i id="b-armonia"></i></div>
+            <div class="scale"><span>se pelean</span><span>conversan</span></div>
+          </div>
+          <div class="meter">
+            <div class="meter-head"><span>Atrevimiento</span><b id="m-atrevimiento">—</b></div>
+            <div class="track"><i id="b-atrevimiento"></i></div>
+            <div class="scale"><span>misa de siete</span><span>carnaval</span></div>
+          </div>
+          <div class="meter">
+            <div class="meter-head"><span>Coherencia de campaña</span><b id="m-coherencia">—</b></div>
+            <div class="track"><i id="b-coherencia"></i></div>
+            <div class="scale"><span>otro partido</span><span>mismo afiche</span></div>
+          </div>
+          <div class="meter">
+            <div class="meter-head"><span>Producción</span><b id="m-produccion">—</b></div>
+            <div class="track"><i id="b-produccion"></i></div>
+            <div class="scale"><span>un toque</span><span>todo el kit</span></div>
+          </div>
+        </div>
+        <p class="veredicto" id="veredicto">—</p>
+      </section>
+
+      <section class="group acciones">
+        <h2>Turno</h2>
+        <div class="turno">
+          <button class="primary" id="azar">Sorpréndame</button>
+          <button id="limpiar">Cara lavada</button>
+          <button id="deshacer">Deshacer</button>
+          <button id="rehacer">Rehacer</button>
+          <div class="seed-row">
+            <input type="text" id="codigo" spellcheck="false" autocomplete="off" aria-label="Código del look" placeholder="Código del look">
+            <button id="cargar">Cargar</button>
+          </div>
+        </div>
+        <p class="note" id="codigo-nota">El código guarda el look entero: cópielo, páselo y se reconstruye igualito.</p>
+      </section>
+    </div>
+
+    <aside class="rail">
+      <div class="segmented panels" role="group" aria-label="Estación de trabajo">
+        <button data-panel="rostro" aria-pressed="true">Rostro</button>
+        <button data-panel="unas" aria-pressed="false">Uñas</button>
+      </div>
+
+      <div id="panels"></div>
+
+    </aside>
+  </div>
+
+
+  <footer class="nota-pie">
+    <p>Caricaturas vectoriales paramétricas, no retratos: ningún parecido es exacto y nada de lo que aparece aquí es palabra, gesto ni posición de nadie. Es un juego de salón sobre figuras públicas, repartido de lado a lado del espectro — y quien prefiera no jugar con nombres propios tiene a <em>Candidatx sin nombre</em> esperando turno.</p>
+  </footer>
+</div>
+
+<script>
+/*__SCRIPT__*/
+</script>
