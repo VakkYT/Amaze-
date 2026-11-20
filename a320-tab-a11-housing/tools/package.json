@@ -1,0 +1,9 @@
+{
+  "name": "a320-tab-a11-housing-tools",
+  "private": true,
+  "type": "module",
+  "description": "Headless three.js renderer for the housing previews (node tools/render.mjs)",
+  "devDependencies": {
+    "three": "0.160.0"
+  }
+}
